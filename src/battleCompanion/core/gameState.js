@@ -64,6 +64,15 @@ export const markAbilityUsed = (state, ability, sourceEntityId = ability.sourceE
   }
 }
 
+export const addEffect = (state, effect) => {
+  const target = effect.duration === 'PERSISTENT' ? 'activeEffects' : 'temporaryEffects'
+  return {
+    ...state,
+    [target]: [...state[target], effect],
+    events: [...state.events, { type: 'EFFECT_ADDED', effectId: effect.id, duration: effect.duration }]
+  }
+}
+
 const shouldKeepUse = (use, nextState) => {
   switch (use.frequency) {
     case 'ONCE_PER_BATTLE':
@@ -97,14 +106,15 @@ const resetTurnScopedUnitState = (unitState = {}) =>
     return [unitId, nextState]
   }))
 
-const resetTurnScopedEffects = (effects = []) =>
-  effects.filter(effect => effect.duration !== 'UNTIL_END_OF_TURN')
+const expireEffects = (effects = [], durations = []) =>
+  effects.filter(effect => !durations.includes(effect.duration))
 
 export const setPhase = (state, phase) => {
   if (!PHASES.includes(phase)) throw new Error(`Unknown phase: ${phase}`)
   return resetUses({
     ...state,
     phase,
+    temporaryEffects: expireEffects(state.temporaryEffects, ['UNTIL_END_OF_PHASE']),
     events: [...state.events, { type: 'PHASE_CHANGED', phase, round: state.round, activePlayer: state.activePlayer }]
   })
 }
@@ -118,7 +128,10 @@ export const setActivePlayer = (state, activePlayer) => {
     activePlayer,
     phase: PHASES[0],
     unitState: resetTurnScopedUnitState(state.unitState),
-    temporaryEffects: resetTurnScopedEffects(state.temporaryEffects),
+    temporaryEffects: expireEffects(state.temporaryEffects, [
+      'UNTIL_END_OF_PHASE',
+      'UNTIL_END_OF_TURN'
+    ]),
     events: [...state.events, { type: 'TURN_CHANGED', activePlayer, round: state.round }]
   })
 }
@@ -129,7 +142,11 @@ export const nextRound = (state) => resetUses({
   activePlayer: TURN.YOUR,
   phase: PHASES[0],
   unitState: resetTurnScopedUnitState(state.unitState),
-  temporaryEffects: resetTurnScopedEffects(state.temporaryEffects),
+  temporaryEffects: expireEffects(state.temporaryEffects, [
+    'UNTIL_END_OF_PHASE',
+    'UNTIL_END_OF_TURN',
+    'UNTIL_END_OF_ROUND'
+  ]),
   events: [...state.events, { type: 'ROUND_STARTED', round: state.round + 1 }]
 })
 
