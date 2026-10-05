@@ -44,7 +44,11 @@ self.addEventListener('fetch', event => {
         if (request.mode === 'navigate') {
           return caches.match('./index.html')
         }
-        return undefined
+        return new Response('Offline', {
+          status: 503,
+          statusText: 'Offline',
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        })
       })
     })
   )
