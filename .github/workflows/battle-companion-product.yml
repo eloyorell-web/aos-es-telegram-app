@@ -1,0 +1,29 @@
+name: Battle Companion Product
+
+on:
+  push:
+    branches:
+      - battle-companion-product
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Test Battle Companion
+        working-directory: battle-companion
+        run: npm test
+      - name: Deploy standalone product
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./battle-companion
+          publish_branch: gh-pages
+          force_orphan: true
