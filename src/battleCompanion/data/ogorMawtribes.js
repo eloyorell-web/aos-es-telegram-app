@@ -1,10 +1,14 @@
+import unitData from './ogorMawtribes.units.json'
+
 export const ogorMawtribesPilot = Object.freeze({
-  id: 'ogor-mawtribes',
-  gameId: 'age-of-sigmar',
-  name: 'Ogor Mawtribes',
+  id: unitData.factionId,
+  gameId: unitData.gameId,
+  name: unitData.factionName,
   localeName: 'Tribus Ogor',
   pilot: true,
-  validationStatus: 'needs_review',
+  validationStatus: 'verified_structural',
+  units: unitData.units,
   abilities: [],
-  note: 'Foundation only: rules are intentionally not inferred from unverified upstream metadata.'
+  source: unitData.generatedFrom,
+  note: 'Structural units are normalized from upstream. Ability legality remains intentionally unpopulated until reviewed.'
 })
