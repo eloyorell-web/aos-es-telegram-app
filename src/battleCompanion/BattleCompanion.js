@@ -3,6 +3,7 @@ import {
   PHASES,
   TURN,
   createGameState,
+  markAbilityUsed,
   nextRound,
   setActivePlayer,
   setPhase
@@ -154,6 +155,10 @@ const BattleCompanion = () => {
       activeGame
     )
 
+    const useAbility = (ability) => {
+      persistGame(markAbilityUsed(activeGame, ability))
+    }
+
     return <main className={Styles.shell}>
       <header className={Styles.header}>
         <span className={Styles.eyebrow}>BATTLE COMPANION</span>
@@ -170,7 +175,12 @@ const BattleCompanion = () => {
       <section className={Styles.panel}>
         <h2>Ahora</h2>
         {assistant.available.length
-          ? assistant.available.map(item => <p key={item.ability.abilityId}>🟢 {item.ability.name}</p>)
+          ? assistant.available.map(item => (
+            <div className={Styles.assistantRow} key={item.ability.abilityId}>
+              <p>🟢 {item.ability.name}</p>
+              <button type="button" onClick={() => useAbility(item.ability)}>✓ Utilizada</button>
+            </div>
+          ))
           : <p>No hay acciones verificadas disponibles para esta fase.</p>
         }
       </section>
@@ -191,6 +201,15 @@ const BattleCompanion = () => {
         }
         {assistant.needsReview.length
           ? <p>{assistant.needsReview.length} regla(s) requieren revisión antes de poder mostrarse como legales.</p>
+          : null
+        }
+        {assistant.unavailable.length
+          ? <div>
+              <h3>No disponible</h3>
+              {assistant.unavailable.map(item => (
+                <p key={item.ability.abilityId}>🔴 {item.ability.name}: {item.evaluation.reason}</p>
+              ))}
+            </div>
           : null
         }
       </section>
