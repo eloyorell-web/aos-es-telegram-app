@@ -1,4 +1,7 @@
 const STORAGE_KEY = 'battle-companion:v1'
+const EXPORT_VERSION = 1
+
+const emptyState = () => ({ armies: [], activeGame: null, locale: 'es' })
 
 const getStorage = () => {
   if (typeof window === 'undefined' || !window.localStorage) return null
@@ -7,13 +10,13 @@ const getStorage = () => {
 
 export const loadBattleCompanion = () => {
   const storage = getStorage()
-  if (!storage) return { armies: [], activeGame: null, locale: 'es' }
+  if (!storage) return emptyState()
 
   try {
     const raw = storage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : { armies: [], activeGame: null, locale: 'es' }
+    return raw ? JSON.parse(raw) : emptyState()
   } catch {
-    return { armies: [], activeGame: null, locale: 'es' }
+    return emptyState()
   }
 }
 
@@ -22,6 +25,41 @@ export const saveBattleCompanion = (data) => {
   if (!storage) return false
   storage.setItem(STORAGE_KEY, JSON.stringify(data))
   return true
+}
+
+export const exportBattleCompanion = (state = loadBattleCompanion()) =>
+  JSON.stringify({
+    format: 'battle-companion',
+    version: EXPORT_VERSION,
+    exportedAt: new Date().toISOString(),
+    data: state
+  }, null, 2)
+
+export const importBattleCompanion = (serialized) => {
+  let payload
+  try {
+    payload = typeof serialized === 'string' ? JSON.parse(serialized) : serialized
+  } catch {
+    return { ok: false, error: 'INVALID_JSON' }
+  }
+
+  if (
+    payload?.format !== 'battle-companion' ||
+    payload?.version !== EXPORT_VERSION ||
+    !payload?.data ||
+    !Array.isArray(payload.data.armies)
+  ) {
+    return { ok: false, error: 'INVALID_FORMAT' }
+  }
+
+  const next = {
+    armies: payload.data.armies,
+    activeGame: payload.data.activeGame || null,
+    locale: payload.data.locale || 'es'
+  }
+
+  saveBattleCompanion(next)
+  return { ok: true, data: next }
 }
 
 export const createArmyRepository = () => {
