@@ -1,0 +1,54 @@
+name: Battle Companion Product
+
+on:
+  push:
+    branches:
+      - battle-companion-product-mvp
+  pull_request:
+    paths:
+      - 'battle-companion/**'
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: battle-companion/package.json
+
+      - name: Install Battle Companion dependencies
+        working-directory: battle-companion
+        run: npm install
+
+      - name: Generate normalized Ogor dataset
+        working-directory: battle-companion
+        run: npm run generate:data
+
+      - name: Run rules engine tests
+        working-directory: battle-companion
+        run: npm test
+
+      - name: Build Battle Companion
+        working-directory: battle-companion
+        run: npm run build
+
+      - name: Deploy Battle Companion demo
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./battle-companion/dist
+          publish_branch: gh-pages
+          destination_dir: battle-companion
+          keep_files: true
