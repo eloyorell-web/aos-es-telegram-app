@@ -57,3 +57,27 @@ test('tracks unit state as deterministic facts', () => {
   const state = setUnitState(createGameState(), 'gluttons-1', { hasRunThisTurn: true })
   expect(state.unitState['gluttons-1'].hasRunThisTurn).toBe(true)
 })
+
+test('turn-scoped unit facts reset when the active player changes', () => {
+  const state = setUnitState(createGameState(), 'gluttons-1', {
+    hasRunThisTurn: true,
+    woundsAllocated: 2
+  })
+  const next = setActivePlayer(state, TURN.OPPONENT)
+
+  expect(next.unitState['gluttons-1'].hasRunThisTurn).toBeUndefined()
+  expect(next.unitState['gluttons-1'].woundsAllocated).toBe(2)
+})
+
+test('end-of-turn temporary effects expire on turn change', () => {
+  const state = {
+    ...createGameState(),
+    temporaryEffects: [
+      { id: 'turn-effect', duration: 'UNTIL_END_OF_TURN' },
+      { id: 'other-effect', duration: 'UNTIL_END_OF_ROUND' }
+    ]
+  }
+
+  const next = setActivePlayer(state, TURN.OPPONENT)
+  expect(next.temporaryEffects.map(effect => effect.id)).toEqual(['other-effect'])
+})
