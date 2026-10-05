@@ -4,7 +4,9 @@ import {
   createArmy,
   createRegiment,
   getArmyPoints,
+  removeUnitFromRegiment,
   setArmyGeneral,
+  setUnitQuantity,
   validateArmy
 } from './army'
 
@@ -56,6 +58,30 @@ test('calculates points using quantity', () => {
   })
 
   expect(getArmyPoints(army)).toBe(400)
+})
+
+test('updates unit quantity through the army model', () => {
+  const regiment = createRegiment({ id: 'r1' })
+  let army = addRegiment(baseArmy(), regiment)
+  army = addUnitToRegiment(army, 'r1', {
+    id: 'gluttons',
+    instanceId: 'gluttons-1',
+    points: 200
+  })
+  army = setUnitQuantity(army, 'r1', 'gluttons-1', 2)
+
+  expect(getArmyPoints(army)).toBe(400)
+  expect(army.regiments[0].units[0].quantity).toBe(2)
+})
+
+test('removes only the selected unit instance', () => {
+  const regiment = createRegiment({ id: 'r1' })
+  let army = addRegiment(baseArmy(), regiment)
+  army = addUnitToRegiment(army, 'r1', { id: 'gluttons', instanceId: 'g1', points: 200 })
+  army = addUnitToRegiment(army, 'r1', { id: 'gluttons', instanceId: 'g2', points: 200 })
+  army = removeUnitFromRegiment(army, 'r1', 'g1')
+
+  expect(army.regiments[0].units.map(unit => unit.instanceId)).toEqual(['g2'])
 })
 
 test('sets exactly the selected unit instance as general', () => {
