@@ -9,6 +9,8 @@ import {
 } from './core/gameState'
 import {
   createArmyRepository,
+  exportBattleCompanion,
+  importBattleCompanion,
   loadBattleCompanion,
   saveBattleCompanion
 } from './core/persistence'
@@ -36,6 +38,7 @@ const BattleCompanion = () => {
   const [activeGame, setActiveGame] = useState(persisted.activeGame)
   const [name, setName] = useState('Mi ejército Ogor')
   const [points, setPoints] = useState(2000)
+  const [backupMessage, setBackupMessage] = useState('')
 
   const refresh = () => setArmies(repository.list())
 
@@ -59,6 +62,34 @@ const BattleCompanion = () => {
 
   const startGame = (army) => {
     persistGame(createGameState({ armyId: army.id }))
+  }
+
+  const exportBackup = () => {
+    const blob = new Blob([exportBattleCompanion()], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = 'battle-companion-backup.json'
+    anchor.click()
+    URL.revokeObjectURL(url)
+    setBackupMessage('Copia exportada.')
+  }
+
+  const importBackup = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const result = importBattleCompanion(await file.text())
+    if (!result.ok) {
+      setBackupMessage('No se ha podido importar: archivo no válido o versión incompatible.')
+      event.target.value = ''
+      return
+    }
+
+    setArmies(result.data.armies)
+    setActiveGame(result.data.activeGame)
+    setBackupMessage('Copia importada correctamente.')
+    event.target.value = ''
   }
 
   const advance = () => persistGame(nextPhase(activeGame))
@@ -139,6 +170,19 @@ const BattleCompanion = () => {
       </label>
       <button type="submit">Guardar ejército</button>
     </form>
+
+    <section className={Styles.panel}>
+      <h2>Copia de seguridad</h2>
+      <p>Exporta ejércitos, idioma y partida activa a un JSON versionado.</p>
+      <div className={Styles.cardActions}>
+        <button type="button" className={Styles.secondary} onClick={exportBackup}>Exportar JSON</button>
+        <label className={Styles.fileButton}>
+          Importar JSON
+          <input type="file" accept="application/json,.json" onChange={importBackup} />
+        </label>
+      </div>
+      {backupMessage ? <p>{backupMessage}</p> : null}
+    </section>
 
     <section className={Styles.list}>
       {armies.length === 0 ? <p className={Styles.empty}>Todavía no hay ejércitos guardados.</p> : null}
