@@ -35,20 +35,35 @@ export const addRegiment = (army, regiment = createRegiment()) => ({
 
 export const addUnitToRegiment = (army, regimentId, unit) => ({
   ...army,
-  regiments: army.regiments.map(regiment =>
-    regiment.id === regimentId
-      ? { ...regiment, units: [...regiment.units, { quantity: 1, ...unit }] }
-      : regiment
-  )
+  regiments: army.regiments.map(regiment => {
+    if (regiment.id !== regimentId) return regiment
+
+    const warscrollId = unit.warscrollId || unit.id
+    const instanceId = unit.instanceId ||
+      `${warscrollId}-${Date.now()}-${regiment.units.length}`
+
+    return {
+      ...regiment,
+      units: [
+        ...regiment.units,
+        {
+          quantity: 1,
+          ...unit,
+          warscrollId,
+          instanceId
+        }
+      ]
+    }
+  })
 })
 
-export const setArmyGeneral = (army, unitId) => ({
+export const setArmyGeneral = (army, unitInstanceId) => ({
   ...army,
   regiments: army.regiments.map(regiment => ({
     ...regiment,
     units: regiment.units.map(unit => ({
       ...unit,
-      isGeneral: unit.id === unitId
+      isGeneral: (unit.instanceId || unit.id) === unitInstanceId
     }))
   }))
 })
