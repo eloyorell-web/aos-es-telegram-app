@@ -62,7 +62,8 @@
   font: inherit;
 }
 
-button {
+.shell button,
+.fileButton {
   border: 0;
   border-radius: 12px;
   padding: 12px 14px;
@@ -70,17 +71,29 @@ button {
   color: #0b0d10;
   font-weight: 800;
   cursor: pointer;
+  font: inherit;
+}
+
+.fileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.fileButton input {
+  display: none;
 }
 
 .secondary {
-  background: #252b33;
-  color: #f5f7fa;
+  background: #252b33 !important;
+  color: #f5f7fa !important;
 }
 
 .ghost {
-  background: transparent;
-  color: #aeb6c2;
-  border: 1px solid #313843;
+  background: transparent !important;
+  color: #aeb6c2 !important;
+  border: 1px solid #313843 !important;
 }
 
 .list {
@@ -136,7 +149,9 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .cardActions button, .actions button {
+  .cardActions button,
+  .cardActions .fileButton,
+  .actions button {
     flex: 1 1 100%;
   }
 }
