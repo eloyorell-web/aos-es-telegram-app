@@ -23,7 +23,7 @@ test('creates a game-agnostic army draft', () => {
   expect(army.validationStatus).toBe('draft')
 })
 
-test('adds units to a selected regiment', () => {
+test('adds units to a selected regiment with instance identity', () => {
   const regiment = createRegiment({ id: 'r1' })
   const army = addUnitToRegiment(addRegiment(baseArmy(), regiment), 'r1', {
     id: 'gluttons',
@@ -31,7 +31,20 @@ test('adds units to a selected regiment', () => {
     points: 200
   })
 
-  expect(army.regiments[0].units[0].id).toBe('gluttons')
+  expect(army.regiments[0].units[0].warscrollId).toBe('gluttons')
+  expect(army.regiments[0].units[0].instanceId).toBeTruthy()
+})
+
+test('allows repeated warscrolls as distinct unit instances', () => {
+  const regiment = createRegiment({ id: 'r1' })
+  let army = addRegiment(baseArmy(), regiment)
+  army = addUnitToRegiment(army, 'r1', { id: 'gluttons', points: 200 })
+  army = addUnitToRegiment(army, 'r1', { id: 'gluttons', points: 200 })
+
+  const units = army.regiments[0].units
+  expect(units).toHaveLength(2)
+  expect(units[0].instanceId).not.toBe(units[1].instanceId)
+  expect(units[0].warscrollId).toBe(units[1].warscrollId)
 })
 
 test('calculates points using quantity', () => {
@@ -45,15 +58,15 @@ test('calculates points using quantity', () => {
   expect(getArmyPoints(army)).toBe(400)
 })
 
-test('sets exactly the selected unit as general', () => {
+test('sets exactly the selected unit instance as general', () => {
   const regiment = createRegiment({ id: 'r1' })
   let army = addRegiment(baseArmy(), regiment)
-  army = addUnitToRegiment(army, 'r1', { id: 'tyrant', points: 180 })
-  army = addUnitToRegiment(army, 'r1', { id: 'butcher', points: 150 })
-  army = setArmyGeneral(army, 'tyrant')
+  army = addUnitToRegiment(army, 'r1', { id: 'tyrant', instanceId: 'tyrant-1', points: 180 })
+  army = addUnitToRegiment(army, 'r1', { id: 'tyrant', instanceId: 'tyrant-2', points: 180 })
+  army = setArmyGeneral(army, 'tyrant-2')
 
-  expect(army.regiments[0].units.find(unit => unit.id === 'tyrant').isGeneral).toBe(true)
-  expect(army.regiments[0].units.find(unit => unit.id === 'butcher').isGeneral).toBe(false)
+  expect(army.regiments[0].units[0].isGeneral).toBe(false)
+  expect(army.regiments[0].units[1].isGeneral).toBe(true)
 })
 
 test('reports points limit errors deterministically', () => {
