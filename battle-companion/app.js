@@ -41,7 +41,7 @@ const phaseLabel = { HERO:'Héroe', MOVEMENT:'Movimiento', SHOOTING:'Disparo', C
 function shell(content, active) {
   active = active || 'home'
   return '<div class="app">' +
-    '<header class="topbar"><div><span class="brand-kicker">BATTLE COMPANION</span><strong>Age of Sigmar</strong></div><span class="pilot">MVP</span></header>' +
+    '<header class="topbar"><div><span class="brand-kicker">BATTLE COMPANION</span><strong>Age of Sigmar</strong></div><span class="pilot">DEMO 0.3</span></header>' +
     '<main>' + content + '</main>' +
     '<nav class="nav">' +
       '<button data-screen="home" class="' + (active==='home'?'active':'') + '">Partida</button>' +
@@ -109,6 +109,99 @@ function builder() {
   return shell(content,'army')
 }
 
+function phaseOverview(game) {
+  const units = game.roster.units || []
+  const role = name => units.filter(u => (u.roles || u.keywords || []).includes(name))
+  const ranged = units.filter(u => (u.tags || []).includes('Ranged'))
+  const availableCharges = units.filter(u => {
+    const us = game.unitState[u.instanceId] || {}
+    return !us.ran && !us.retreated
+  })
+  const notFought = units.filter(u => !(game.unitState[u.instanceId] || {}).fought)
+
+  if (game.activePlayer !== PLAYERS.YOU) {
+    return {
+      title: 'Turno rival',
+      lead: 'El Companion cambia de contexto: no te propone acciones propias como si fuese tu turno.',
+      items: [
+        'Mantén visibles tus estados y efectos activos.',
+        'Las reacciones específicas aparecerán solo cuando su timing esté verificado.',
+        'Al terminar el turno rival se limpiarán los estados temporales de turno.'
+      ]
+    }
+  }
+
+  if (game.phase === 'HERO') {
+    return {
+      title: 'Fase de Héroe',
+      lead: 'Prepara recursos y habilidades antes de avanzar.',
+      items: [
+        'Tu ejército tiene ' + role('Hero').length + ' héroe(s), ' + role('Wizard').length + ' Wizard y ' + role('Priest').length + ' Priest.',
+        'Revisa habilidades con timing de fase de héroe y efectos que deban declararse ahora.',
+        'Las habilidades concretas de warscroll solo aparecerán aquí cuando estén verificadas.'
+      ]
+    }
+  }
+  if (game.phase === 'MOVEMENT') {
+    return {
+      title: 'Fase de Movimiento',
+      lead: 'Registra qué hace cada unidad; ese estado condiciona fases posteriores.',
+      items: [
+        'Puedes marcar Mover, Correr o Retirarse unidad por unidad.',
+        'Si marcas Correr, el motor recordará ese estado durante el turno.',
+        'Si marcas Retirarse, también quedará registrado para evaluar acciones posteriores.'
+      ]
+    }
+  }
+  if (game.phase === 'SHOOTING') {
+    return {
+      title: 'Fase de Disparo',
+      lead: ranged.length ? 'Tienes ' + ranged.length + ' entrada(s) etiquetada(s) con capacidad de disparo en el catálogo.' : 'No hay entradas etiquetadas como disparo en tu lista actual.',
+      items: [
+        'El Companion no inventará perfiles de ataque que no estén normalizados.',
+        'Los perfiles verificados se incorporarán a cada unidad desde la capa de datos.',
+        'Los estados registrados en movimiento permanecen visibles.'
+      ]
+    }
+  }
+  if (game.phase === 'CHARGE') {
+    return {
+      title: 'Fase de Carga',
+      lead: availableCharges.length + ' de ' + units.length + ' entradas no están bloqueadas por Correr/Retirarse en el estado registrado.',
+      items: [
+        'Las unidades que corrieron aparecen bloqueadas con el motivo.',
+        'Las unidades que se retiraron aparecen bloqueadas con el motivo.',
+        'Otros modificadores de carga se añadirán solo con reglas verificadas.'
+      ]
+    }
+  }
+  if (game.phase === 'COMBAT') {
+    return {
+      title: 'Fase de Combate',
+      lead: notFought.length + ' entrada(s) siguen sin marcar como utilizadas en combate.',
+      items: [
+        'Marca Combatir cuando resuelvas una unidad.',
+        'El Companion conservará qué unidades ya actuaron.',
+        'Prioridades y habilidades de combate se incorporarán desde metadata verificada.'
+      ]
+    }
+  }
+  return {
+    title: 'Fase Final',
+    lead: 'Cierra el turno sin perder efectos o estados pendientes.',
+    items: [
+      'Revisa efectos que expiren al final del turno.',
+      'Comprueba objetivos y anotaciones antes de avanzar.',
+      'Al pasar al siguiente turno se reinician los estados temporales de turno.'
+    ]
+  }
+}
+
+function phasePanel(game) {
+  const info = phaseOverview(game)
+  return '<section class="phase-panel"><span class="eyebrow">GUÍA DE FASE</span><h2>' + info.title + '</h2><p>' + info.lead + '</p><ul>' + info.items.map(item=>'<li>' + item + '</li>').join('') + '</ul></section>'
+}
+
 function battle() {
   const g = state.game
   const unitRows = g.roster.units.map(unit => {
@@ -124,6 +217,7 @@ function battle() {
   const content =
     '<section class="battle-head"><div><span class="eyebrow">RONDA ' + g.round + '</span><h1>' + (g.activePlayer===PLAYERS.YOU?'MI TURNO':'TURNO RIVAL') + '</h1></div><span class="phase">' + phaseLabel[g.phase] + '</span></section>' +
     '<div class="phase-track">' + phases + '</div>' +
+    phasePanel(g) +
     '<section class="section-title"><span>AHORA</span><small>Según el estado registrado</small></section><section class="battle-list">' + unitRows + '</section>' +
     '<button class="primary sticky-next" data-action="next-phase">Siguiente fase →</button>'
   return shell(content,'home')
