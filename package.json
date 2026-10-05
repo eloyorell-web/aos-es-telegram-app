@@ -1,7 +1,7 @@
 {
   "name": "aos-rukosuev",
   "version": "0.1.0",
-  "homepage": "https://aletagro.github.io/aos-telegram-app/",
+  "homepage": "https://eloyorell-web.github.io/aos-es-telegram-app/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -25,6 +25,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:ci": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
