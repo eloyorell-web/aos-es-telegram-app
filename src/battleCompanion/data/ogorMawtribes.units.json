@@ -1,0 +1,643 @@
+{
+  "gameId": "age-of-sigmar",
+  "factionId": "08135df6-633c-4d58-9adb-7d4b8563b0da",
+  "factionName": "Ogor Mawtribes",
+  "generatedFrom": {
+    "repository": "eloyorell-web/aos-es-telegram-app",
+    "ref": "master",
+    "path": "src/dataBase.json",
+    "blobSha": "6cf23355a512efc051e0e716936898372d6422c5"
+  },
+  "note": "Structural unit subset only. No ability legality is inferred from this file.",
+  "units": [
+    {
+      "id": "f49d3347-6cc0-4fb4-93e3-5771c051aa3c",
+      "name": "Bloodpelt Hunter",
+      "points": 130,
+      "keywords": [
+        "Hero",
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "eb242b63-0aa8-4ab4-a723-bd8d8c42aa23",
+      "name": "Butcher",
+      "points": 170,
+      "keywords": [
+        "Hero",
+        "Wizard (1)",
+        "Infantry",
+        "Ward (6+)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Mawseekers"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "fba5cf66-8e96-4e8e-99e4-ade2cd7359e9",
+      "name": "Cleavers",
+      "points": 220,
+      "keywords": [
+        "Infantry",
+        "Champion",
+        "Ward (6+)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Mawseekers"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "95950a43-ee96-470f-b2e7-e4894d30ba2b",
+      "name": "Firebelly",
+      "points": 150,
+      "keywords": [
+        "Hero",
+        "Wizard (1)",
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "71770ccf-df8b-4780-ae8a-647e5ea8dba5",
+      "name": "Frost Sabres",
+      "points": 70,
+      "keywords": [
+        "Beast",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "4abcb00a-b60e-4769-9c68-05d8cfc8e01a",
+      "name": "Frostlord on Stonehorn",
+      "points": 340,
+      "keywords": [
+        "Hero",
+        "Monster",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "5cbccfe1-4174-4149-b170-8d7590ea4695",
+      "name": "Frostlord on Thundertusk",
+      "points": 280,
+      "keywords": [
+        "Hero",
+        "Monster",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "01cf2e41-5363-46fc-ad20-92466bc18849",
+      "name": "Gluttons",
+      "points": 210,
+      "keywords": [
+        "Infantry",
+        "Champion",
+        "Musician (1/5)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "a0132362-6020-4763-bcd9-c94b98523917",
+      "name": "Gnoblar Scraplauncher",
+      "points": 160,
+      "keywords": [
+        "War Machine",
+        "Destruction",
+        "Ogor Mawtribes"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "ac896689-fb18-4527-98b7-979de74c289b",
+      "name": "Gnoblars",
+      "points": 130,
+      "keywords": [
+        "Infantry",
+        "Champion",
+        "Destruction",
+        "Ogor Mawtribes"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "ff260598-5963-4e41-830a-46fbd8527dbe",
+      "name": "Gorger Mawpack",
+      "points": 240,
+      "keywords": [
+        "Infantry",
+        "Champion (1/5)",
+        "Musician (1/5)",
+        "Ward (6+)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Mawseekers"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "2efc432e-39e5-4a0e-a0a6-6d542bd2d87e",
+      "name": "Great Mawpot",
+      "points": 20,
+      "keywords": [
+        "Faction Terrain",
+        "Destruction",
+        "Ogor Mawtribes"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "e36649e5-1ed8-416e-8ed8-69b8c9c2ebcf",
+      "name": "Grell Firefist",
+      "points": 140,
+      "keywords": [
+        "Unique",
+        "Hero",
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "f574e6e0-6b22-4354-96c4-c4d8a33a4b85",
+      "name": "Gutseers",
+      "points": 200,
+      "keywords": [
+        "Infantry",
+        "Champion",
+        "Ward (6+)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Mawseekers"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "26015cac-bb01-43df-b65f-160329c4b844",
+      "name": "Hunters with Sabrefangs",
+      "points": 170,
+      "keywords": [
+        "Infantry",
+        "Champion",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "a7a95d39-4cd6-40f5-88a6-99abe22a0241",
+      "name": "Huskard on Stonehorn",
+      "points": 300,
+      "keywords": [
+        "Hero",
+        "Monster",
+        "Priest (1)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "2cb54b6b-ba74-4217-8cd5-549edb3acaa9",
+      "name": "Huskard on Thundertusk",
+      "points": 280,
+      "keywords": [
+        "Hero",
+        "Monster",
+        "Priest (1)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "d7d2f7e1-2abe-4927-ac7b-61130b357ce3",
+      "name": "Icebrow Hunter",
+      "points": 130,
+      "keywords": [
+        "Hero",
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "a6599ace-6ef2-4a12-8ef9-6106ac6a715d",
+      "name": "Icefall Yhetees",
+      "points": 120,
+      "keywords": [
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "16846bfb-03bb-4b16-914e-3d05ee3ca547",
+      "name": "Ironblaster",
+      "points": 180,
+      "keywords": [
+        "War Machine",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "3b6a8545-1a8e-454f-9ca8-2c5e2aebcab6",
+      "name": "Ironguts",
+      "points": 200,
+      "keywords": [
+        "Infantry",
+        "Champion",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "d27418c2-8e18-43cd-bc6f-7b07fb2fb7cd",
+      "name": "Kragnos, the End of Empires",
+      "points": 580,
+      "keywords": [
+        "Warmaster",
+        "Unique",
+        "Hero",
+        "Monster",
+        "Ward (5+)",
+        "Destruction",
+        "Ogor Mawtribes"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "00454651-e486-436c-89bc-7fa0747fa70b",
+      "name": "Leadbelchers",
+      "points": 140,
+      "keywords": [
+        "Infantry",
+        "Champion",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "aa00a92f-5c4c-4c79-87dd-06a3c314abb5",
+      "name": "Maneaters",
+      "points": 180,
+      "keywords": [
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "67038cf5-0c8f-4e37-a8ec-0cbb4a566a04",
+      "name": "Mantrapper",
+      "points": 130,
+      "keywords": [
+        "Hero",
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "62b71cb3-86df-4e44-9882-5be4a51a0de4",
+      "name": "Maulbeast Cavalry",
+      "points": 280,
+      "keywords": [
+        "Cavalry",
+        "Champion",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "528e48b0-9304-402c-b485-9a102aa35b66",
+      "name": "Maulbeast Raiders",
+      "points": 210,
+      "keywords": [
+        "Cavalry",
+        "Champion",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "3cd91aab-e148-4ea3-ad48-4938d6786c99",
+      "name": "Morga The Mighty, Overtyrant",
+      "points": 420,
+      "keywords": [
+        "Warmaster",
+        "Unique",
+        "Hero",
+        "Monster",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "b5c61cc2-c77c-4004-91cf-8eb2aeda4f7e",
+      "name": "Mournfang Pack",
+      "points": 200,
+      "keywords": [
+        "Cavalry",
+        "Champion",
+        "Musician (1/4)",
+        "Standard Bearer (1/4)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "815589be-3ebf-45a2-a0c4-89a6d08fa7b5",
+      "name": "Redd the Maw, High Slaughtermaster",
+      "points": 420,
+      "keywords": [
+        "Warmaster",
+        "Unique",
+        "Hero",
+        "War Machine",
+        "Wizard (2)",
+        "Ward (5+)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Mawseekers"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "d0c23e5e-bcfd-4566-b2a8-07a5e0e8123b",
+      "name": "Scourge of Aqshy: Frostlord on Thundertusk",
+      "points": 280,
+      "keywords": [
+        "Hero",
+        "Monster",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "needs_review"
+    },
+    {
+      "id": "47993319-e849-4eea-9f4d-561965dfc9f6",
+      "name": "Scourge of Aqshy: Huskard on Thundertusk",
+      "points": 260,
+      "keywords": [
+        "Hero",
+        "Monster",
+        "Priest (1)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "needs_review"
+    },
+    {
+      "id": "b4e4ad1b-101e-4d0a-8f7b-3010e39e9d7f",
+      "name": "Scourge of Ghyran Gnoblar Scraplauncher",
+      "points": 120,
+      "keywords": [
+        "War Machine",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Rhinox"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "needs_review"
+    },
+    {
+      "id": "051566ea-e82c-4ead-8470-374a9aeda06e",
+      "name": "Scourge of Ghyran Ironblaster",
+      "points": 160,
+      "keywords": [
+        "War Machine",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Rhinox",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "needs_review"
+    },
+    {
+      "id": "118f2160-3fb5-403d-b9a8-288772f4fef2",
+      "name": "Slaughtermaster",
+      "points": 160,
+      "keywords": [
+        "Hero",
+        "Wizard (1)",
+        "Infantry",
+        "Ward (6+)",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Mawseekers"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "16429e17-8ff4-4079-8a5a-15b32eacc0e9",
+      "name": "Stonehorn Beastriders",
+      "points": 280,
+      "keywords": [
+        "Monster",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "5021cef3-733e-444d-b601-420147a597bf",
+      "name": "Thundertusk Beastriders",
+      "points": 240,
+      "keywords": [
+        "Monster",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Beastclaw"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "c801b5dc-1f31-47c8-9f6f-035d7d97ee56",
+      "name": "Tyrant",
+      "points": 150,
+      "keywords": [
+        "Hero",
+        "Infantry",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    },
+    {
+      "id": "a3a02af6-466c-4d5a-86cb-e4f6b0e9b2ff",
+      "name": "Tyrant on Glutthorn",
+      "points": 390,
+      "keywords": [
+        "Hero",
+        "Monster",
+        "Destruction",
+        "Ogor Mawtribes",
+        "Ogor",
+        "Gutbusters"
+      ],
+      "source": "upstream:dataBase.json",
+      "sourceBlobSha": "6cf23355a512efc051e0e716936898372d6422c5",
+      "validationStatus": "verified_structural"
+    }
+  ]
+}
