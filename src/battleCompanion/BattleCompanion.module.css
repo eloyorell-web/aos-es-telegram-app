@@ -1,0 +1,142 @@
+.shell {
+  min-height: 100vh;
+  padding: 24px 16px 96px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,.08), transparent 32rem),
+    #0b0d10;
+  color: #f5f7fa;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.header, .panel, .armyCard, .statusGrid {
+  max-width: 760px;
+  margin: 0 auto 16px;
+}
+
+.header h1 {
+  margin: 6px 0;
+  font-size: clamp(32px, 8vw, 56px);
+  letter-spacing: -.04em;
+}
+
+.header p, .panel p, .armyCard p, .empty {
+  color: #aeb6c2;
+}
+
+.eyebrow {
+  color: #c5ff66;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.panel, .armyCard {
+  border: 1px solid #252b33;
+  border-radius: 18px;
+  padding: 18px;
+  background: #12161b;
+  box-shadow: 0 18px 50px rgba(0,0,0,.22);
+}
+
+.panel h2, .armyCard h2 {
+  margin: 4px 0 12px;
+}
+
+.panel label {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #cbd2da;
+  font-size: 14px;
+}
+
+.panel input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #313843;
+  border-radius: 12px;
+  padding: 13px 14px;
+  background: #0d1014;
+  color: #fff;
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #c5ff66;
+  color: #0b0d10;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.secondary {
+  background: #252b33;
+  color: #f5f7fa;
+}
+
+.ghost {
+  background: transparent;
+  color: #aeb6c2;
+  border: 1px solid #313843;
+}
+
+.list {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.armyCard {
+  display: grid;
+  gap: 16px;
+}
+
+.cardActions, .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.actions {
+  max-width: 760px;
+  margin: 16px auto 0;
+}
+
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.statusGrid div {
+  border: 1px solid #252b33;
+  border-radius: 16px;
+  padding: 14px;
+  background: #12161b;
+}
+
+.statusGrid span {
+  display: block;
+  color: #8f98a6;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.statusGrid strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 18px;
+}
+
+@media (max-width: 560px) {
+  .statusGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardActions button, .actions button {
+    flex: 1 1 100%;
+  }
+}
