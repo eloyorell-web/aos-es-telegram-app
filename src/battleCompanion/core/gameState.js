@@ -13,6 +13,14 @@ export const PHASES = Object.freeze([
   'END'
 ])
 
+const TURN_SCOPED_UNIT_FIELDS = Object.freeze([
+  'hasRunThisTurn',
+  'hasRetreatedThisTurn',
+  'hasChargedThisTurn',
+  'hasFoughtThisTurn',
+  'hasShotThisTurn'
+])
+
 export const createGameState = ({ armyId, startingPlayer = TURN.YOUR } = {}) => ({
   gameId: `game-${Date.now()}`,
   armyId: armyId || null,
@@ -80,6 +88,18 @@ const resetUses = (state) => ({
   )
 })
 
+const resetTurnScopedUnitState = (unitState = {}) =>
+  Object.fromEntries(Object.entries(unitState).map(([unitId, state]) => {
+    const nextState = { ...state }
+    TURN_SCOPED_UNIT_FIELDS.forEach(field => {
+      delete nextState[field]
+    })
+    return [unitId, nextState]
+  }))
+
+const resetTurnScopedEffects = (effects = []) =>
+  effects.filter(effect => effect.duration !== 'UNTIL_END_OF_TURN')
+
 export const setPhase = (state, phase) => {
   if (!PHASES.includes(phase)) throw new Error(`Unknown phase: ${phase}`)
   return resetUses({
@@ -97,6 +117,8 @@ export const setActivePlayer = (state, activePlayer) => {
     ...state,
     activePlayer,
     phase: PHASES[0],
+    unitState: resetTurnScopedUnitState(state.unitState),
+    temporaryEffects: resetTurnScopedEffects(state.temporaryEffects),
     events: [...state.events, { type: 'TURN_CHANGED', activePlayer, round: state.round }]
   })
 }
@@ -106,6 +128,8 @@ export const nextRound = (state) => resetUses({
   round: state.round + 1,
   activePlayer: TURN.YOUR,
   phase: PHASES[0],
+  unitState: resetTurnScopedUnitState(state.unitState),
+  temporaryEffects: resetTurnScopedEffects(state.temporaryEffects),
   events: [...state.events, { type: 'ROUND_STARTED', round: state.round + 1 }]
 })
 
