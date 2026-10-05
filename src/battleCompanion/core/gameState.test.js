@@ -1,5 +1,6 @@
 import {
   TURN,
+  addEffect,
   createGameState,
   markAbilityUsed,
   nextRound,
@@ -69,6 +70,19 @@ test('turn-scoped unit facts reset when the active player changes', () => {
   expect(next.unitState['gluttons-1'].woundsAllocated).toBe(2)
 })
 
+test('effects can be persistent or temporary', () => {
+  const persistent = addEffect(createGameState(), { id: 'persistent', duration: 'PERSISTENT' })
+  const temporary = addEffect(persistent, { id: 'phase', duration: 'UNTIL_END_OF_PHASE' })
+
+  expect(temporary.activeEffects.map(effect => effect.id)).toEqual(['persistent'])
+  expect(temporary.temporaryEffects.map(effect => effect.id)).toEqual(['phase'])
+})
+
+test('end-of-phase effects expire when phase changes', () => {
+  const state = addEffect(createGameState(), { id: 'phase-effect', duration: 'UNTIL_END_OF_PHASE' })
+  expect(setPhase(state, 'MOVEMENT').temporaryEffects).toEqual([])
+})
+
 test('end-of-turn temporary effects expire on turn change', () => {
   const state = {
     ...createGameState(),
@@ -80,4 +94,17 @@ test('end-of-turn temporary effects expire on turn change', () => {
 
   const next = setActivePlayer(state, TURN.OPPONENT)
   expect(next.temporaryEffects.map(effect => effect.id)).toEqual(['other-effect'])
+})
+
+test('end-of-round effects expire on the next round', () => {
+  const state = {
+    ...createGameState(),
+    temporaryEffects: [
+      { id: 'round-effect', duration: 'UNTIL_END_OF_ROUND' },
+      { id: 'battle-effect', duration: 'UNTIL_END_OF_BATTLE' }
+    ]
+  }
+
+  const next = nextRound(state)
+  expect(next.temporaryEffects.map(effect => effect.id)).toEqual(['battle-effect'])
 })
