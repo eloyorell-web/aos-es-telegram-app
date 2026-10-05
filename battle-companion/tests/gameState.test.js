@@ -55,3 +55,20 @@ test('opponent turn does not invent reactions',()=>{
   assert.equal(result.available.length,0)
   assert.match(result.reminders[0],/verificadas/)
 })
+
+import { analyzeArmy } from '../core/armyAdvisor.js'
+
+test('advisor flags an empty army',()=>{
+  const notes=analyzeArmy({units:[],points:0,pointsLimit:2000})
+  assert.equal(notes[0].title,'Ejército vacío')
+})
+
+test('advisor flags missing general',()=>{
+  const notes=analyzeArmy({units:[{roles:['Infantry'],tags:[]}],points:200,pointsLimit:2000})
+  assert.equal(notes.some(n=>n.title==='Falta general'),true)
+})
+
+test('advisor detects points overflow',()=>{
+  const notes=analyzeArmy({units:[{roles:['Hero'],tags:[],isGeneral:true}],points:2100,pointsLimit:2000})
+  assert.equal(notes.some(n=>n.title==='Excedes el límite'),true)
+})
