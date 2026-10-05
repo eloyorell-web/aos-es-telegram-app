@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Battle Companion",
+  "name": "Battle Companion — Age of Sigmar",
+  "description": "Asistente mobile-first para ejércitos, estado de partida y reglas verificadas.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +19,10 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "./#/battle-companion",
+  "scope": "./",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait",
+  "theme_color": "#0b0d10",
+  "background_color": "#0b0d10"
 }
