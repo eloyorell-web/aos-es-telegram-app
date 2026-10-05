@@ -234,3 +234,26 @@
     flex: 1 1 auto;
   }
 }
+
+.assistantRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #252b33;
+}
+
+.assistantRow:first-of-type {
+  border-top: 0;
+}
+
+.assistantRow p {
+  margin: 0;
+}
+
+@media (max-width: 560px) {
+  .assistantRow {
+    grid-template-columns: 1fr;
+  }
+}
