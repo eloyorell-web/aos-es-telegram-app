@@ -9,7 +9,7 @@ on:
       - master
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -37,3 +37,12 @@ jobs:
 
       - name: Report bundle files
         run: du -h build/static/js/* | sort -h
+
+      - name: Deploy demo to GitHub Pages branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/battle-companion-foundation'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          publish_branch: gh-pages
+          force_orphan: true
