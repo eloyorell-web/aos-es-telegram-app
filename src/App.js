@@ -46,15 +46,17 @@ import Spearhead from './spearhead/Spearhead'
 import SpearheadCatalog from './spearhead/SpearheadCatalog'
 import SpearheadArmies from './spearhead/SpearheadArmies'
 import SpearheadArmy from './spearhead/SpearheadArmy'
+import BattleCompanion from './battleCompanion/BattleCompanion'
 
 import './App.css'
 
-const tg = window.Telegram.WebApp
+const tg = window.Telegram?.WebApp
 
 function App() {
   useSwipeBack()
 
   useEffect(() => {
+    if (!tg) return
     tg.ready()
     if (!tg.isExpanded) {
       tg.expand()
@@ -68,6 +70,7 @@ function App() {
     <Header />
     <Routes>
       <Route index element={<Main />} />
+      <Route path={'battle-companion'} element={<BattleCompanion />} />
       <Route path={'mainRules'} element={<MainRules />} />
       <Route path={'catalog'} element={<Catalog />} />
       <Route path={'army'} element={<Army />} />
