@@ -57,6 +57,40 @@ export const addUnitToRegiment = (army, regimentId, unit) => ({
   })
 })
 
+export const removeUnitFromRegiment = (army, regimentId, unitInstanceId) => ({
+  ...army,
+  regiments: army.regiments.map(regiment =>
+    regiment.id === regimentId
+      ? {
+          ...regiment,
+          units: regiment.units.filter(
+            unit => (unit.instanceId || unit.id) !== unitInstanceId
+          )
+        }
+      : regiment
+  )
+})
+
+export const setUnitQuantity = (army, regimentId, unitInstanceId, quantity) => {
+  const normalizedQuantity = Math.max(1, Number(quantity) || 1)
+
+  return {
+    ...army,
+    regiments: army.regiments.map(regiment =>
+      regiment.id === regimentId
+        ? {
+            ...regiment,
+            units: regiment.units.map(unit =>
+              (unit.instanceId || unit.id) === unitInstanceId
+                ? { ...unit, quantity: normalizedQuantity }
+                : unit
+            )
+          }
+        : regiment
+    )
+  }
+}
+
 export const setArmyGeneral = (army, unitInstanceId) => ({
   ...army,
   regiments: army.regiments.map(regiment => ({
