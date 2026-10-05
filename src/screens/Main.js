@@ -12,17 +12,17 @@ const tg = window.Telegram?.WebApp
 
 const Main = () => {
     const navigate = useNavigate()
-    const user = tg.initDataUnsafe?.user
+    const user = tg?.initDataUnsafe?.user
 
     useEffect(() => {
-        if (!main.userReq) {
+        if (!main.userReq && user?.id) {
             main.userReq = true
-            fetch(`https://aoscom.online/users/user_by_tg_id?tg_id=${user?.id}`)
+            fetch(`https://aoscom.online/users/user_by_tg_id?tg_id=${user.id}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data?.exists) {
                         main.user = data.user
-                    } 
+                    }
                 })
                 .catch(error => console.error(error))
         }
@@ -43,11 +43,11 @@ const Main = () => {
     return <>
         <HeaderImage src={malekith} alt='main' />
         <div id='column' className='Chapter'>
+            <Row title='Battle Companion' navigateTo='battle-companion' />
             <Row title='Rules' navigateTo='mainRules' />
             <Row title='Builder' navigateTo='userLists' />
             <Row title='Community Lists' navigateTo='lists'/>
             <Row title='Spearhead' navigateTo='spearhead'/>
-            {/* <Row title='Battle Dashboard' navigateTo='singlePlayer' /> */}
             <Row title='Damage Calculator' navigateTo='calculator' />
             {user?.id === Constants.myTgId ? <Row title='Developer Menu' navigateTo='developer' /> : null}
             <button id={Styles.suppotButton} onClick={handleSupport}>Support the app!</button>
