@@ -12,6 +12,11 @@ import {
   loadBattleCompanion,
   saveBattleCompanion
 } from './core/persistence'
+import {
+  createArmy as createArmyModel,
+  getArmyPoints
+} from './core/army'
+import { buildBattleAssistant } from './core/battleAssistant'
 import { ogorMawtribesPilot } from './data/ogorMawtribes'
 import Styles from './BattleCompanion.module.css'
 
@@ -42,16 +47,13 @@ const BattleCompanion = () => {
 
   const createArmy = (event) => {
     event.preventDefault()
-    repository.save({
+    repository.save(createArmyModel({
       name,
       faction: ogorMawtribesPilot.name,
       factionId: ogorMawtribesPilot.id,
       gameId: ogorMawtribesPilot.gameId,
-      pointsLimit: Number(points) || 2000,
-      points: 0,
-      units: [],
-      validationStatus: 'needs_review'
-    })
+      pointsLimit: Number(points) || 2000
+    }))
     refresh()
   }
 
@@ -64,6 +66,11 @@ const BattleCompanion = () => {
 
   if (activeGame) {
     const army = armies.find(item => item.id === activeGame.armyId)
+    const assistant = buildBattleAssistant(
+      ogorMawtribesPilot.abilities,
+      activeGame
+    )
+
     return <main className={Styles.shell}>
       <header className={Styles.header}>
         <span className={Styles.eyebrow}>BATTLE COMPANION</span>
@@ -79,12 +86,30 @@ const BattleCompanion = () => {
 
       <section className={Styles.panel}>
         <h2>Ahora</h2>
-        <p>No hay habilidades Ogor verificadas cargadas todavía. El foundation no convierte metadatos dudosos en acciones legales.</p>
+        {assistant.available.length
+          ? assistant.available.map(item => <p key={item.ability.abilityId}>🟢 {item.ability.name}</p>)
+          : <p>No hay acciones verificadas disponibles para esta fase.</p>
+        }
       </section>
 
       <section className={Styles.panel}>
-        <h2>Checklist</h2>
-        <p>La infraestructura de uso/reset ya está activa y cubierta por tests. Las reglas se incorporarán solo tras normalización y validación.</p>
+        <h2>Recuerda</h2>
+        {assistant.reminders.length
+          ? assistant.reminders.map(item => <p key={item.ability.abilityId}>⚠️ {item.ability.name}</p>)
+          : <p>No hay recordatorios verificados para esta fase.</p>
+        }
+      </section>
+
+      <section className={Styles.panel}>
+        <h2>Condicional</h2>
+        {assistant.conditional.length
+          ? assistant.conditional.map(item => <p key={item.ability.abilityId}>🟠 {item.ability.name}: {item.evaluation.reason}</p>)
+          : <p>No hay acciones condicionales verificadas para esta fase.</p>
+        }
+        {assistant.needsReview.length
+          ? <p>{assistant.needsReview.length} regla(s) requieren revisión antes de poder mostrarse como legales.</p>
+          : null
+        }
       </section>
 
       <div className={Styles.actions}>
@@ -121,7 +146,7 @@ const BattleCompanion = () => {
         <div>
           <span className={Styles.eyebrow}>{army.faction}</span>
           <h2>{army.name}</h2>
-          <p>{army.points || 0} / {army.pointsLimit} pts</p>
+          <p>{getArmyPoints(army)} / {army.pointsLimit} pts</p>
         </div>
         <div className={Styles.cardActions}>
           <button onClick={() => startGame(army)}>Iniciar partida</button>
