@@ -155,7 +155,7 @@ const BattleCompanion = () => {
       activeGame
     )
 
-    const useAbility = (ability) => {
+    const handleUseAbility = (ability) => {
       persistGame(markAbilityUsed(activeGame, ability))
     }
 
@@ -178,7 +178,7 @@ const BattleCompanion = () => {
           ? assistant.available.map(item => (
             <div className={Styles.assistantRow} key={item.ability.abilityId}>
               <p>🟢 {item.ability.name}</p>
-              <button type="button" onClick={() => useAbility(item.ability)}>✓ Utilizada</button>
+              <button type="button" onClick={() => handleUseAbility(item.ability)}>✓ Utilizada</button>
             </div>
           ))
           : <p>No hay acciones verificadas disponibles para esta fase.</p>
