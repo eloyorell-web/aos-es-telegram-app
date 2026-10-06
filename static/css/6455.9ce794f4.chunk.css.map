@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/6455.9ce794f4.chunk.css","mappings":"AAAA,wBACE,eAAiB,CACjB,WACF,CAEA,oBAEE,cAAe,CADf,iBAEF","sources":["screens/styles/Rules.module.css"],"sourcesContent":["#container {\n  background: white;\n  padding: 8px;\n}\n\n#title {\n  margin-bottom: 8px;\n  font-size: 18px;\n}"],"names":[],"sourceRoot":""}

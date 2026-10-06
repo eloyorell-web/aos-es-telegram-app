@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/5711.c01bf162.chunk.css","mappings":"AAAA,+BAEE,cAAe,CACf,kBAAmB,CAFnB,oBAGF","sources":["spearhead/styles/SpearheadArmy.module.css"],"sourcesContent":["#infoText {\n  white-space: pre-line;\n  font-size: 16px;\n  padding-bottom: 4px;\n}\n"],"names":[],"sourceRoot":""}

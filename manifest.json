@@ -1,0 +1,28 @@
+{
+  "short_name": "Battle Companion",
+  "name": "Battle Companion — Age of Sigmar",
+  "description": "Asistente mobile-first para ejércitos, estado de partida y reglas verificadas.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./#/battle-companion",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0b0d10",
+  "background_color": "#0b0d10"
+}
