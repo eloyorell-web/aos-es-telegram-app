@@ -14,8 +14,16 @@ test('keeps upstream ids unique in the normalized subset', () => {
   expect(new Set(ids).size).toBe(ids.length)
 })
 
-test('does not infer legal abilities from structural unit data', () => {
-  expect(ogorMawtribesPilot.abilities).toEqual([])
+test('loads rule cards from the existing upstream database', () => {
+  expect(ogorMawtribesPilot.abilities.length).toBeGreaterThan(0)
+  expect(ogorMawtribesPilot.abilities.some(rule => rule.name === 'Feast of Bloodshed')).toBe(true)
+})
+
+test('upstream rules preserve timing metadata for the phase assistant', () => {
+  const feast = ogorMawtribesPilot.abilities.find(rule => rule.name === 'Feast of Bloodshed')
+  expect(feast.phase).toBe('END')
+  expect(feast.frequency).toBe('ONCE_PER_TURN')
+  expect(feast.cardColor).toBe('purple')
 })
 
 test('special Scourge variants remain review-required', () => {
