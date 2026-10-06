@@ -1,16 +1,8 @@
 import { getArmyUnits } from './army'
 
-// Builds the ruleset for the army actually being played. Nothing from units or
-// selections outside the list is allowed into the in-game assistant.
 export const getArmySourceIds = (army) => {
   if (!army) return new Set()
-
-  const unitIds = getArmyUnits(army).flatMap(unit => [
-    unit.id,
-    unit.warscrollId,
-    unit.instanceId
-  ]).filter(Boolean)
-
+  const unitIds = getArmyUnits(army).flatMap(unit => [unit.id, unit.warscrollId, unit.instanceId]).filter(Boolean)
   const selectionIds = [
     army.battleFormation?.id || army.battleFormation,
     ...(army.enhancements || []).flatMap(item => [item?.id, item?.sourceEntityId]),
@@ -18,24 +10,18 @@ export const getArmySourceIds = (army) => {
     army.prayerLore?.id || army.prayerLore,
     army.manifestationLore?.id || army.manifestationLore
   ].filter(Boolean)
-
   return new Set([...unitIds, ...selectionIds, 'army', army.factionId].filter(Boolean))
 }
 
 export const getAbilitiesForArmy = (army, abilities = []) => {
   const sourceIds = getArmySourceIds(army)
-
   return abilities.filter(ability => {
     if (!ability) return false
-    if (ability.scope === 'FACTION' || ability.scope === 'ARMY') return true
-
+    if (ability.scope === 'ARMY') return true
     const sources = [
-      ability.sourceEntityId,
-      ability.unitId,
-      ability.warscrollId,
-      ability.selectionId
+      ...(ability.sourceIds || []), ability.sourceEntityId, ability.unitId,
+      ability.warscrollId, ability.selectionId
     ].filter(Boolean)
-
     return sources.some(source => sourceIds.has(source))
   })
 }
