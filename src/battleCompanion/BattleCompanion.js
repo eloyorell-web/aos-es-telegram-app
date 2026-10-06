@@ -89,14 +89,14 @@ const BattleCompanion = () => {
     const armyAbilities = getAbilitiesForArmy(army, ogorMawtribesPilot.abilities)
     const assistant = buildBattleAssistant(armyAbilities, activeGame)
     const visibleCount = assistant.available.length + assistant.reminders.length + assistant.conditional.length
-    const useAbility = ability => persistGame(markAbilityUsed(activeGame, ability))
+    const markUsed = ability => persistGame(markAbilityUsed(activeGame, ability))
     return <main className={Styles.shell}>
       <header className={Styles.header}><span className={Styles.eyebrow}>BATTLE COMPANION</span><h1>{army?.name || 'Partida activa'}</h1><p>{army?.faction || ogorMawtribesPilot.name}</p></header>
       <section className={Styles.statusGrid}><div><span>Ronda</span><strong>{activeGame.round}</strong></div><div><span>Turno</span><strong>{activeGame.activePlayer === TURN.YOUR ? 'Mi turno' : 'Turno rival'}</strong></div><div><span>Fase</span><strong>{activeGame.phase}</strong></div></section>
       <section className={Styles.phaseHero}><span>AHORA</span><h2>{activeGame.phase}</h2><p>{visibleCount} recordatorio(s) de tu ejército para este momento.</p></section>
-      <section className={Styles.panel}><h2>Acciones disponibles</h2>{assistant.available.length ? assistant.available.map(item => <RuleCard key={`${item.ability.abilityId}-${item.ability.sourceEntityId || 'army'}`} item={item} action={() => useAbility(item.ability)} />) : <p>No tienes acciones verificadas disponibles en esta fase.</p>}</section>
+      <section className={Styles.panel}><h2>Acciones disponibles</h2>{assistant.available.length ? assistant.available.map(item => <RuleCard key={`${item.ability.abilityId}-${item.ability.sourceEntityId || 'army'}`} item={item} action={() => markUsed(item.ability)} />) : <p>No tienes acciones verificadas disponibles en esta fase.</p>}</section>
       <section className={Styles.panel}><h2>No olvides</h2>{assistant.reminders.length ? assistant.reminders.map(item => <RuleCard key={`${item.ability.abilityId}-${item.ability.sourceEntityId || 'army'}`} item={item} />) : <p>No hay pasivas o recordatorios de tu lista para esta fase.</p>}</section>
-      <section className={Styles.panel}><h2>Si se cumple...</h2>{assistant.conditional.length ? assistant.conditional.map(item => <RuleCard key={`${item.ability.abilityId}-${item.ability.sourceEntityId || 'army'}`} item={item} action={() => useAbility(item.ability)} />) : <p>No hay reglas condicionales de tu lista para esta fase.</p>}{assistant.needsReview.length ? <p>⚠️ {assistant.needsReview.length} regla(s) de tu lista requieren revisión de metadatos.</p> : null}</section>
+      <section className={Styles.panel}><h2>Si se cumple...</h2>{assistant.conditional.length ? assistant.conditional.map(item => <RuleCard key={`${item.ability.abilityId}-${item.ability.sourceEntityId || 'army'}`} item={item} action={() => markUsed(item.ability)} />) : <p>No hay reglas condicionales de tu lista para esta fase.</p>}{assistant.needsReview.length ? <p>⚠️ {assistant.needsReview.length} regla(s) de tu lista requieren revisión de metadatos.</p> : null}</section>
       <div className={Styles.actions}><button onClick={() => persistGame(nextPhase(activeGame))}>Siguiente fase</button><button className={Styles.secondary} onClick={() => persistGame(nextRound(activeGame))}>Siguiente ronda</button><button className={Styles.ghost} onClick={() => persistGame(null)}>Cerrar partida</button></div>
     </main>
   }
