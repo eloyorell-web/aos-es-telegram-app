@@ -76,7 +76,7 @@ function rosterDetails(r) {
   const tactics = (r.battleTactics || []).join(' · ')
   return '<section class="roster-details">' +
     '<div><span>Gran Alianza</span><strong>' + (r.grandAlliance || '—') + '</strong></div>' +
-    '<div><span>Formación de batalla</span><strong>' + (r.battleFormation || '—') + '</strong></div>' +
+    '<div><span>Formación de batalla</span><strong>' + (r.battleFormation || '—') + (r.battleFormationPoints ? ' (' + r.battleFormationPoints + ' pts)' : '') + '</strong></div>' +
     '<div><span>Cartas de tácticas</span><strong>' + (tactics || '—') + '</strong></div>' +
     '<div><span>Saber de hechizos</span><strong>' + (r.spellLore || '—') + '</strong></div>' +
     '<div><span>Saber de plegarias</span><strong>' + (r.prayerLore || '—') + '</strong></div>' +
@@ -91,9 +91,10 @@ function regimentCards(r) {
   if (!Array.isArray(r.regiments)) return ''
   return '<section class="regiments">' + r.regiments.map(regiment =>
     '<article class="regiment-card"><div class="regiment-title"><strong>' + regiment.name + '</strong>' + (regiment.isGeneralRegiment?'<span>REGIMIENTO DEL GENERAL</span>':'') + '</div>' +
-    regiment.units.map(u =>
-      '<div class="regiment-unit"><span>' + (u.modelCount || u.quantity || 1) + ' × ' + (u.displayName || u.name) + (u.isGeneral?' · GENERAL':'') + '</span><b>' + (u.points * u.quantity) + ' pts</b></div>'
-    ).join('') + '</article>'
+    regiment.units.map(u => {
+      const extras = [u.artefactDisplayName ? 'Artefacto: ' + u.artefactDisplayName : '', u.heroicTrait ? 'Rasgo heroico: ' + u.heroicTrait : ''].filter(Boolean).join(' · ')
+      return '<div class="regiment-unit-wrap"><div class="regiment-unit"><span>' + (u.modelCount || u.quantity || 1) + ' × ' + (u.displayName || u.name) + (u.isGeneral?' · GENERAL':'') + '</span><b>' + (u.points * u.quantity) + ' pts</b></div>' + (extras ? '<small class="unit-extra">' + extras + '</small>' : '') + '</div>'
+    }).join('') + '</article>'
   ).join('') + '</section>'
 }
 
@@ -106,7 +107,7 @@ function army() {
     '<section class="page-head"><span class="eyebrow">MI EJÉRCITO</span><h1>' + r.name + '</h1><p>' + r.faction + ' · ' + r.points + ' / ' + r.pointsLimit + ' pts</p><div class="head-actions"><button class="primary" data-action="edit-army">Editar ejército</button><button class="secondary" data-action="new-army">Nuevo</button></div></section>' +
     '<section class="unit-list">' + rows + '</section>' +
     rosterDetails(r) + regimentCards(r) +
-    (r.unitPointsSubtotal && r.unitPointsSubtotal !== r.points ? '<div class="points-note">El export declara <strong>' + r.points + '/' + r.pointsLimit + ' pts</strong>; el subtotal visible de unidades es <strong>' + r.unitPointsSubtotal + ' pts</strong>.</div>' : '') +
+    (r.unitPointsSubtotal && r.battleFormationPoints ? '<div class="points-note">Desglose: <strong>' + r.unitPointsSubtotal + ' pts</strong> en unidades + <strong>' + r.battleFormationPoints + ' pts</strong> de ' + r.battleFormation + ' = <strong>' + r.points + ' pts</strong>.</div>' : '') +
     '<section class="section-title"><span>QUÉ VEO EN TU LISTA</span><small>Composición estructural</small></section><section class="advice-list">' + analysisCards(r) + '</section>' +
     '<details class="import-box"><summary>Importar roster JSON</summary><textarea id="roster-json" placeholder="Pega aquí un roster serializado"></textarea><button class="secondary" data-action="import">Importar</button><p id="import-error"></p></details>'
   return shell(content,'army')
