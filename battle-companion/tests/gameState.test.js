@@ -72,3 +72,20 @@ test('advisor detects points overflow',()=>{
   const notes=analyzeArmy({units:[{roles:['Hero'],tags:[],isGeneral:true}],points:2100,pointsLimit:2000})
   assert.equal(notes.some(n=>n.title==='Excedes el límite'),true)
 })
+
+import { ogorMawCult2000 } from '../data/ogorMawCult2000.js'
+
+test('2000pt Ogor preset preserves exported roster metadata',()=>{
+  assert.equal(ogorMawCult2000.points,2000)
+  assert.equal(ogorMawCult2000.pointsLimit,2000)
+  assert.equal(ogorMawCult2000.drops,2)
+  assert.equal(ogorMawCult2000.wounds,132)
+  assert.equal(ogorMawCult2000.regiments.length,2)
+  assert.equal(ogorMawCult2000.units.length,8)
+})
+
+test('2000pt Ogor preset records visible unit subtotal separately',()=>{
+  const subtotal=ogorMawCult2000.units.reduce((sum,u)=>sum+u.points*u.quantity,0)
+  assert.equal(subtotal,1990)
+  assert.equal(ogorMawCult2000.unitPointsSubtotal,1990)
+})
