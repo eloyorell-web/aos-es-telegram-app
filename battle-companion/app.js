@@ -4,6 +4,7 @@ import { analyzeArmy } from './core/armyAdvisor.js'
 import { normalizeRoster } from './adapters/rosterAdapter.js'
 import { ogorPilotRoster, source } from './data/ogorPilot.js'
 import { ogorCatalog, catalogById } from './data/ogorCatalog.js'
+import { ogorMawCult2000 } from './data/ogorMawCult2000.js'
 
 const STORAGE_KEY = 'battle-companion-product-v2'
 const clone = value => JSON.parse(JSON.stringify(value))
@@ -65,9 +66,35 @@ function home() {
     '<section class="hero compact"><span class="eyebrow">BATTLE COMPANION</span><h1>Tu ejército.<br>Tu partida.</h1><p>Crea tu lista, revisa su composición y úsala durante la partida para saber qué acciones siguen disponibles.</p></section>' +
     continueCard +
     '<section class="card army-summary"><div><span class="eyebrow">MI EJÉRCITO</span><h2>' + r.name + '</h2><p>' + r.faction + ' · ' + r.points.toLocaleString('es-ES') + ' / ' + r.pointsLimit.toLocaleString('es-ES') + ' pts · ' + r.units.length + ' entradas</p></div>' +
-    '<div class="stack-actions"><button class="primary" data-action="start" ' + (r.units.length?'':'disabled') + '>Iniciar partida</button><button class="secondary" data-action="new-army">Crear ejército</button></div></section>' +
+    '<div class="stack-actions"><button class="primary" data-action="start" ' + (r.units.length?'':'disabled') + '>Iniciar partida</button><button class="secondary" data-action="load-mawcult">Cargar lista Ogor 2.000</button><button class="secondary" data-action="new-army">Crear ejército</button></div></section>' +
     '<section class="section-title"><span>ANÁLISIS DE COMPOSICIÓN</span><small>No sustituye reglas verificadas</small></section><section class="advice-list">' + analysisCards(r) + '</section>'
   return shell(content,'home')
+}
+
+function rosterDetails(r) {
+  if (!r.battleFormation && !r.spellLore && !r.prayerLore && !r.manifestationLore && !r.factionTerrain) return ''
+  const tactics = (r.battleTactics || []).join(' · ')
+  return '<section class="roster-details">' +
+    '<div><span>Gran Alianza</span><strong>' + (r.grandAlliance || '—') + '</strong></div>' +
+    '<div><span>Formación de batalla</span><strong>' + (r.battleFormation || '—') + '</strong></div>' +
+    '<div><span>Cartas de tácticas</span><strong>' + (tactics || '—') + '</strong></div>' +
+    '<div><span>Saber de hechizos</span><strong>' + (r.spellLore || '—') + '</strong></div>' +
+    '<div><span>Saber de plegarias</span><strong>' + (r.prayerLore || '—') + '</strong></div>' +
+    '<div><span>Manifestaciones</span><strong>' + (r.manifestationLore || '—') + '</strong></div>' +
+    '<div><span>Terreno de facción</span><strong>' + (r.factionTerrain || '—') + '</strong></div>' +
+    '<div><span>Despliegues</span><strong>' + (r.drops ?? '—') + '</strong></div>' +
+    '<div><span>Heridas</span><strong>' + (r.wounds ?? '—') + '</strong></div>' +
+  '</section>'
+}
+
+function regimentCards(r) {
+  if (!Array.isArray(r.regiments)) return ''
+  return '<section class="regiments">' + r.regiments.map(regiment =>
+    '<article class="regiment-card"><div class="regiment-title"><strong>' + regiment.name + '</strong>' + (regiment.isGeneralRegiment?'<span>REGIMIENTO DEL GENERAL</span>':'') + '</div>' +
+    regiment.units.map(u =>
+      '<div class="regiment-unit"><span>' + (u.modelCount || u.quantity || 1) + ' × ' + (u.displayName || u.name) + (u.isGeneral?' · GENERAL':'') + '</span><b>' + (u.points * u.quantity) + ' pts</b></div>'
+    ).join('') + '</article>'
+  ).join('') + '</section>'
 }
 
 function army() {
@@ -78,6 +105,8 @@ function army() {
   const content =
     '<section class="page-head"><span class="eyebrow">MI EJÉRCITO</span><h1>' + r.name + '</h1><p>' + r.faction + ' · ' + r.points + ' / ' + r.pointsLimit + ' pts</p><div class="head-actions"><button class="primary" data-action="edit-army">Editar ejército</button><button class="secondary" data-action="new-army">Nuevo</button></div></section>' +
     '<section class="unit-list">' + rows + '</section>' +
+    rosterDetails(r) + regimentCards(r) +
+    (r.unitPointsSubtotal && r.unitPointsSubtotal !== r.points ? '<div class="points-note">El export declara <strong>' + r.points + '/' + r.pointsLimit + ' pts</strong>; el subtotal visible de unidades es <strong>' + r.unitPointsSubtotal + ' pts</strong>.</div>' : '') +
     '<section class="section-title"><span>QUÉ VEO EN TU LISTA</span><small>Composición estructural</small></section><section class="advice-list">' + analysisCards(r) + '</section>' +
     '<details class="import-box"><summary>Importar roster JSON</summary><textarea id="roster-json" placeholder="Pega aquí un roster serializado"></textarea><button class="secondary" data-action="import">Importar</button><p id="import-error"></p></details>'
   return shell(content,'army')
@@ -274,6 +303,7 @@ document.addEventListener('click', event=>{
   if(action==='start') return setState({game:createGameState(state.roster),screen:'battle'})
   if(action==='continue') return setState({screen:'battle'})
   if(action==='next-phase') return setState({game:nextPhase(state.game)})
+  if(action==='load-mawcult') return setState({roster:clone(ogorMawCult2000),draft:null,game:null,screen:'army'})
   if(action==='new-army') return setState({draft:newRoster(),screen:'builder'})
   if(action==='edit-army') return setState({draft:clone(state.roster),screen:'builder'})
   if(action==='cancel-builder') return setState({draft:null,screen:'army'})
