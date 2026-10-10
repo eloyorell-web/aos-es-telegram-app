@@ -42,7 +42,7 @@ const phaseLabel = { HERO:'Héroe', MOVEMENT:'Movimiento', SHOOTING:'Disparo', C
 function shell(content, active) {
   active = active || 'home'
   return '<div class="app">' +
-    '<header class="topbar"><div><span class="brand-kicker">BATTLE COMPANION</span><strong>Age of Sigmar</strong></div><span class="pilot">DEMO 0.3</span></header>' +
+    '<header class="topbar"><div><span class="brand-kicker">BATTLE COMPANION</span><strong>Age of Sigmar</strong></div><span class="pilot">DEMO 0.4</span></header>' +
     '<main>' + content + '</main>' +
     '<nav class="nav">' +
       '<button data-screen="home" class="' + (active==='home'?'active':'') + '">Partida</button>' +
@@ -100,7 +100,7 @@ function regimentCards(r) {
 function army() {
   const r = state.roster
   const rows = r.units.length ? r.units.map(u =>
-    '<article class="unit-card"><div><strong>' + u.name + '</strong><small>' + (u.isGeneral?'GENERAL · ':'') + (u.roles||u.keywords||[]).slice(0,3).join(' · ') + '</small></div><div class="points-right"><b>' + (u.points*u.quantity) + ' pts</b><small>' + u.quantity + '× ' + u.points + '</small></div></article>'
+    '<article class="unit-card"><div><strong>' + (u.displayName || u.name) + '</strong><small>' + (u.isGeneral?'GENERAL · ':'') + (u.roles||u.keywords||[]).slice(0,3).join(' · ') + '</small></div><div class="points-right"><b>' + (u.points*u.quantity) + ' pts</b><small>' + u.quantity + '× ' + u.points + '</small></div></article>'
   ).join('') : '<div class="empty">Todavía no has añadido unidades.</div>'
   const content =
     '<section class="page-head"><span class="eyebrow">MI EJÉRCITO</span><h1>' + r.name + '</h1><p>' + r.faction + ' · ' + r.points + ' / ' + r.pointsLimit + ' pts</p><div class="head-actions"><button class="primary" data-action="edit-army">Editar ejército</button><button class="secondary" data-action="new-army">Nuevo</button></div></section>' +
@@ -121,7 +121,7 @@ function builder() {
     const isHero = unit.roles.includes('Hero')
     const general = isHero && qty ? '<button class="general-toggle ' + (current.isGeneral?'on':'') + '" data-unit-id="' + unit.id + '" data-builder-action="general">' + (current.isGeneral?'✓ General':'Hacer general') + '</button>' : ''
     return '<article class="catalog-row ' + (qty?'selected':'') + '">' +
-      '<div class="catalog-main"><strong>' + unit.name + '</strong><small>' + unit.roles.join(' · ') + (unit.tags.length?' · '+unit.tags.join(' · '):'') + '</small></div>' +
+      '<div class="catalog-main"><strong>' + (unit.displayName || unit.name) + '</strong><small>' + unit.roles.join(' · ') + (unit.tags.length?' · '+unit.tags.join(' · '):'') + '</small></div>' +
       '<div class="catalog-points">' + unit.points + ' pts</div>' +
       '<div class="qty"><button data-unit-id="' + unit.id + '" data-builder-action="minus" ' + (qty?'':'disabled') + '>−</button><b>' + qty + '</b><button data-unit-id="' + unit.id + '" data-builder-action="plus">+</button></div>' +
       general + '</article>'
@@ -240,7 +240,7 @@ function battle() {
     const reminders = ev.reminders.map(r=>'<p class="reminder">⚠ ' + r + '</p>').join('')
     const us = g.unitState[unit.instanceId] || {}
     const flags = [us.ran?'Corrió':'',us.retreated?'Se retiró':'',us.charged?'Cargó':'',us.fought?'Combatió':''].filter(Boolean).join(' · ')
-    return '<article class="battle-unit"><div class="unit-title"><strong>' + unit.name + (unit.isGeneral?' · GENERAL':'') + '</strong><small>' + (flags||'Sin acciones registradas') + '</small></div><div class="chips">' + actions + '</div>' + blocked + reminders + '</article>'
+    return '<article class="battle-unit"><div class="unit-title"><strong>' + (unit.displayName || unit.name) + (unit.isGeneral?' · GENERAL':'') + '</strong><small>' + (flags||'Sin acciones registradas') + '</small></div><div class="chips">' + actions + '</div>' + blocked + reminders + '</article>'
   }).join('')
   const phases = Object.keys(phaseLabel).map(p=>'<span class="' + (p===g.phase?'current':'') + '">' + phaseLabel[p] + '</span>').join('')
   const content =
