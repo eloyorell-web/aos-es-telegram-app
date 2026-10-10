@@ -7,6 +7,7 @@ export const ogorMawCult2000 = {
   pointsLimit: 2000,
   points: 2000,
   unitPointsSubtotal: 1990,
+  battleFormationPoints: 10,
   wounds: 132,
   drops: 2,
   battleFormation: 'Maw-Cult Fanatics',
@@ -15,7 +16,7 @@ export const ogorMawCult2000 = {
   prayerLore: 'Lore of the Everwinter',
   manifestationLore: 'Aetherwrought Machineries',
   factionTerrain: 'Mawpit',
-  sourceNote: 'Lista proporcionada por el usuario. El export declara 2000/2000 pts; el subtotal visible de unidades es 1990 pts.',
+  sourceNote: 'Lista proporcionada por el usuario. Desglose actual: 1990 pts en unidades + 10 pts de Maw-Cult Fanatics = 2000 pts.',
   regiments: [
     {
       name: 'Regimiento 1',
@@ -25,7 +26,7 @@ export const ogorMawCult2000 = {
         { instanceId:'gluttons-1', id:'01cf2e41-5363-46fc-ad20-92466bc18849', name:'Gluttons', displayName:'Glotones', points:210, quantity:2, modelCount:10, roles:['Infantry'], tags:['Gutbusters'] },
         { instanceId:'maulbeast-cavalry-1', id:'62b71cb3-86df-4e44-9882-5be4a51a0de4', name:'Maulbeast Cavalry', displayName:'Caballería Brutizampa', points:280, quantity:1, modelCount:2, roles:['Cavalry'], tags:['Gutbusters'] },
         { instanceId:'hunters-1', id:'26015cac-bb01-43df-b65f-160329c4b844', name:'Hunters with Sabrefangs', displayName:'Cazadores con Colmillosables', points:170, quantity:1, modelCount:5, roles:['Infantry'], tags:['Beastclaw'] },
-        { instanceId:'bloodpelt-1', id:'f49d3347-6cc0-4fb4-93e3-5771c051aa3c', name:'Bloodpelt Hunter', displayName:'Cazador Pellejosangriento', points:130, quantity:1, modelCount:1, roles:['Hero','Infantry'], tags:['Beastclaw'] }
+        { instanceId:'bloodpelt-1', id:'f49d3347-6cc0-4fb4-93e3-5771c051aa3c', name:'Bloodpelt Hunter', displayName:'Cazador Pellejosangriento', points:130, quantity:1, modelCount:1, roles:['Hero','Infantry'], tags:['Beastclaw'], artefact:'Mantle of Entrails', artefactDisplayName:'Manto de Entrañas', heroicTrait:null }
       ]
     },
     {
