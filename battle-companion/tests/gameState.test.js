@@ -84,8 +84,17 @@ test('2000pt Ogor preset preserves exported roster metadata',()=>{
   assert.equal(ogorMawCult2000.units.length,8)
 })
 
-test('2000pt Ogor preset records visible unit subtotal separately',()=>{
+test('2000pt Ogor preset totals units plus formation correctly',()=>{
   const subtotal=ogorMawCult2000.units.reduce((sum,u)=>sum+u.points*u.quantity,0)
   assert.equal(subtotal,1990)
   assert.equal(ogorMawCult2000.unitPointsSubtotal,1990)
+  assert.equal(ogorMawCult2000.battleFormationPoints,10)
+  assert.equal(subtotal + ogorMawCult2000.battleFormationPoints,2000)
+})
+
+test('Bloodpelt Hunter preset carries Mantle of Entrails at zero extra points',()=>{
+  const hunter=ogorMawCult2000.units.find(u=>u.name==='Bloodpelt Hunter')
+  assert.equal(hunter.artefact,'Mantle of Entrails')
+  assert.equal(hunter.points,130)
+  assert.equal(hunter.heroicTrait,null)
 })
