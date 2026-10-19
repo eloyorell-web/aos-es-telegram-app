@@ -5,6 +5,7 @@ import { normalizeRoster } from './adapters/rosterAdapter.js'
 import { ogorPilotRoster, source } from './data/ogorPilot.js'
 import { ogorCatalog, catalogById } from './data/ogorCatalog.js'
 import { ogorMawCult2000 } from './data/ogorMawCult2000.js'
+import { kruleboyzKragnos1990 } from './data/kruleboyzKragnos1990.js'
 
 const STORAGE_KEY = 'battle-companion-product-v2'
 const clone = value => JSON.parse(JSON.stringify(value))
@@ -42,7 +43,7 @@ const phaseLabel = { HERO:'Héroe', MOVEMENT:'Movimiento', SHOOTING:'Disparo', C
 function shell(content, active) {
   active = active || 'home'
   return '<div class="app">' +
-    '<header class="topbar"><div><span class="brand-kicker">BATTLE COMPANION</span><strong>Age of Sigmar</strong></div><span class="pilot">DEMO 0.4</span></header>' +
+    '<header class="topbar"><div><span class="brand-kicker">BATTLE COMPANION</span><strong>Age of Sigmar</strong></div><span class="pilot">DEMO 0.5</span></header>' +
     '<main>' + content + '</main>' +
     '<nav class="nav">' +
       '<button data-screen="home" class="' + (active==='home'?'active':'') + '">Partida</button>' +
@@ -66,9 +67,16 @@ function home() {
     '<section class="hero compact"><span class="eyebrow">BATTLE COMPANION</span><h1>Tu ejército.<br>Tu partida.</h1><p>Crea tu lista, revisa su composición y úsala durante la partida para saber qué acciones siguen disponibles.</p></section>' +
     continueCard +
     '<section class="card army-summary"><div><span class="eyebrow">MI EJÉRCITO</span><h2>' + r.name + '</h2><p>' + r.faction + ' · ' + r.points.toLocaleString('es-ES') + ' / ' + r.pointsLimit.toLocaleString('es-ES') + ' pts · ' + r.units.length + ' entradas</p></div>' +
-    '<div class="stack-actions"><button class="primary" data-action="start" ' + (r.units.length?'':'disabled') + '>Iniciar partida</button><button class="secondary" data-action="load-mawcult">Cargar lista Ogor 2.000</button><button class="secondary" data-action="new-army">Crear ejército</button></div></section>' +
+    '<div class="stack-actions"><button class="primary" data-action="start" ' + (r.units.length?'':'disabled') + '>Iniciar partida</button><button class="secondary" data-action="load-mawcult">Cargar Ogor 2.000</button><button class="secondary" data-action="load-kruleboyz">Cargar Kruleboyz 1.990</button><button class="secondary" data-action="new-army">Crear ejército Ogor</button></div></section>' +
     '<section class="section-title"><span>ANÁLISIS DE COMPOSICIÓN</span><small>No sustituye reglas verificadas</small></section><section class="advice-list">' + analysisCards(r) + '</section>'
   return shell(content,'home')
+}
+
+function rosterWarnings(r) {
+  if (!Array.isArray(r.warnings) || !r.warnings.length) return ''
+  return '<section class="roster-warnings"><strong>ADVERTENCIAS DEL ROSTER</strong>' +
+    r.warnings.map(w => '<div>⚠ ' + w + '</div>').join('') +
+  '</section>'
 }
 
 function rosterDetails(r) {
@@ -104,9 +112,9 @@ function army() {
     '<article class="unit-card"><div><strong>' + (u.displayName || u.name) + '</strong><small>' + (u.isGeneral?'GENERAL · ':'') + (u.roles||u.keywords||[]).slice(0,3).join(' · ') + '</small></div><div class="points-right"><b>' + (u.points*u.quantity) + ' pts</b><small>' + u.quantity + '× ' + u.points + '</small></div></article>'
   ).join('') : '<div class="empty">Todavía no has añadido unidades.</div>'
   const content =
-    '<section class="page-head"><span class="eyebrow">MI EJÉRCITO</span><h1>' + r.name + '</h1><p>' + r.faction + ' · ' + r.points + ' / ' + r.pointsLimit + ' pts</p><div class="head-actions"><button class="primary" data-action="edit-army">Editar ejército</button><button class="secondary" data-action="new-army">Nuevo</button></div></section>' +
+    '<section class="page-head"><span class="eyebrow">MI EJÉRCITO</span><h1>' + r.name + '</h1><p>' + r.faction + ' · ' + r.points + ' / ' + r.pointsLimit + ' pts</p><div class="head-actions">' + (r.editableWithCurrentBuilder===false ? '<span class="preset-badge">PRESET DE PRUEBA</span>' : '<button class="primary" data-action="edit-army">Editar ejército</button>') + '<button class="secondary" data-action="new-army">Nuevo Ogor</button></div></section>' +
     '<section class="unit-list">' + rows + '</section>' +
-    rosterDetails(r) + regimentCards(r) +
+    rosterWarnings(r) + rosterDetails(r) + regimentCards(r) +
     (r.unitPointsSubtotal && r.battleFormationPoints ? '<div class="points-note">Desglose: <strong>' + r.unitPointsSubtotal + ' pts</strong> en unidades + <strong>' + r.battleFormationPoints + ' pts</strong> de ' + r.battleFormation + ' = <strong>' + r.points + ' pts</strong>.</div>' : '') +
     '<section class="section-title"><span>QUÉ VEO EN TU LISTA</span><small>Composición estructural</small></section><section class="advice-list">' + analysisCards(r) + '</section>' +
     '<details class="import-box"><summary>Importar roster JSON</summary><textarea id="roster-json" placeholder="Pega aquí un roster serializado"></textarea><button class="secondary" data-action="import">Importar</button><p id="import-error"></p></details>'
@@ -305,6 +313,7 @@ document.addEventListener('click', event=>{
   if(action==='continue') return setState({screen:'battle'})
   if(action==='next-phase') return setState({game:nextPhase(state.game)})
   if(action==='load-mawcult') return setState({roster:clone(ogorMawCult2000),draft:null,game:null,screen:'army'})
+  if(action==='load-kruleboyz') return setState({roster:clone(kruleboyzKragnos1990),draft:null,game:null,screen:'army'})
   if(action==='new-army') return setState({draft:newRoster(),screen:'builder'})
   if(action==='edit-army') return setState({draft:clone(state.roster),screen:'builder'})
   if(action==='cancel-builder') return setState({draft:null,screen:'army'})
