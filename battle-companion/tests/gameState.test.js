@@ -98,3 +98,25 @@ test('Bloodpelt Hunter preset carries Mantle of Entrails at zero extra points',(
   assert.equal(hunter.points,130)
   assert.equal(hunter.heroicTrait,null)
 })
+
+
+import { kruleboyzKragnos1990 } from '../data/kruleboyzKragnos1990.js'
+
+test('Kruleboyz demo preset preserves supplied roster metadata',()=>{
+  assert.equal(kruleboyzKragnos1990.points,1990)
+  assert.equal(kruleboyzKragnos1990.pointsLimit,2000)
+  assert.equal(kruleboyzKragnos1990.drops,4)
+  assert.equal(kruleboyzKragnos1990.wounds,155)
+  assert.equal(kruleboyzKragnos1990.regiments.length,4)
+  assert.equal(kruleboyzKragnos1990.units.length,13)
+})
+
+test('Kruleboyz demo preset keeps manifestation warning',()=>{
+  assert.equal(kruleboyzKragnos1990.manifestationLore,null)
+  assert.equal(kruleboyzKragnos1990.warnings.includes('Falta elegir Saber de Manifestaciones'),true)
+})
+
+test('Kruleboyz demo preset points add to 1990',()=>{
+  const subtotal=kruleboyzKragnos1990.units.reduce((sum,u)=>sum+u.points*u.quantity,0)
+  assert.equal(subtotal,1990)
+})
