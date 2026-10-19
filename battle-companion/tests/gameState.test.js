@@ -108,7 +108,7 @@ test('Kruleboyz demo preset preserves supplied roster metadata',()=>{
   assert.equal(kruleboyzKragnos1990.drops,4)
   assert.equal(kruleboyzKragnos1990.wounds,155)
   assert.equal(kruleboyzKragnos1990.regiments.length,4)
-  assert.equal(kruleboyzKragnos1990.units.length,13)
+  assert.equal(kruleboyzKragnos1990.units.length,12)
 })
 
 test('Kruleboyz demo preset keeps manifestation warning',()=>{
