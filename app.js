@@ -1,0 +1,338 @@
+import { createGameState, nextPhase, setUnitAction, PLAYERS } from './core/gameState.js'
+import { evaluateUnit } from './core/rulesEngine.js'
+import { analyzeArmy } from './core/armyAdvisor.js'
+import { normalizeRoster } from './adapters/rosterAdapter.js'
+import { ogorPilotRoster, source } from './data/ogorPilot.js'
+import { ogorCatalog, catalogById } from './data/ogorCatalog.js'
+import { ogorMawCult2000 } from './data/ogorMawCult2000.js'
+import { kruleboyzKragnos1990 } from './data/kruleboyzKragnos1990.js'
+
+const STORAGE_KEY = 'battle-companion-final-kruleboyz-v1'
+const clone = value => JSON.parse(JSON.stringify(value))
+
+function calculatePoints(units) {
+  return units.reduce((sum, unit) => sum + Number(unit.points || 0) * Number(unit.quantity || 1), 0)
+}
+
+function newRoster() {
+  return { id:'local-ogor', name:'Mi ejército Ogor', game:'Age of Sigmar', faction:'Ogor Mawtribes', points:0, pointsLimit:2000, units:[] }
+}
+
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
+    if (saved && saved.roster) return saved
+  } catch (error) {}
+  return { roster: clone(kruleboyzKragnos1990), draft: null, game: null, screen: 'army' }
+}
+
+let state = load()
+
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+}
+
+function setState(patch) {
+  state = Object.assign({}, state, patch)
+  persist()
+  render()
+}
+
+const phaseLabel = { HERO:'Héroe', MOVEMENT:'Movimiento', SHOOTING:'Disparo', CHARGE:'Carga', COMBAT:'Combate', END:'Final' }
+
+function shell(content, active) {
+  active = active || 'home'
+  return '<div class="app">' +
+    '<header class="topbar"><div><span class="brand-kicker">BATTLE COMPANION</span><strong>Age of Sigmar</strong></div><span class="pilot">VERSIÓN FINAL</span></header>' +
+    '<main>' + content + '</main>' +
+    '<nav class="nav">' +
+      '<button data-screen="home" class="' + (active==='home'?'active':'') + '">Partida</button>' +
+      '<button data-screen="army" class="' + (active==='army'?'active':'') + '">Ejército</button>' +
+      '<button data-screen="rules" class="' + (active==='rules'?'active':'') + '">Reglas</button>' +
+    '</nav></div>'
+}
+
+function analysisCards(roster) {
+  return analyzeArmy(roster).map(note =>
+    '<article class="advice ' + note.level + '"><strong>' + note.title + '</strong><p>' + note.text + '</p></article>'
+  ).join('')
+}
+
+function home() {
+  const r = state.roster
+  const continueCard = state.game
+    ? '<button class="continue-card" data-action="continue"><span>CONTINUAR PARTIDA</span><strong>Ronda ' + state.game.round + ' · ' + (state.game.activePlayer===PLAYERS.YOU?'Mi turno':'Turno rival') + '</strong><b>' + phaseLabel[state.game.phase] + '</b></button>'
+    : ''
+  const content =
+    '<section class="hero compact"><span class="eyebrow">BATTLE COMPANION</span><h1>Kruleboyz + Kragnos.<br>Listos para jugar.</h1><p>La lista está precargada. No tienes que importar ni seleccionar nada: revisa el ejército y pulsa Iniciar partida.</p></section>' +
+    continueCard +
+    '<section class="card army-summary"><div><span class="eyebrow">MI EJÉRCITO</span><h2>' + r.name + '</h2><p>' + r.faction + ' · ' + r.points.toLocaleString('es-ES') + ' / ' + r.pointsLimit.toLocaleString('es-ES') + ' pts · ' + r.units.length + ' entradas</p></div>' +
+    '<div class="stack-actions"><button class="primary" data-action="start" ' + (r.units.length?'':'disabled') + '>Iniciar partida</button></div></section>' +
+    '<section class="section-title"><span>ANÁLISIS DE COMPOSICIÓN</span><small>No sustituye reglas verificadas</small></section><section class="advice-list">' + analysisCards(r) + '</section>'
+  return shell(content,'home')
+}
+
+function rosterWarnings(r) {
+  if (!Array.isArray(r.warnings) || !r.warnings.length) return ''
+  return '<section class="roster-warnings"><strong>ADVERTENCIAS DEL ROSTER</strong>' +
+    r.warnings.map(w => '<div>⚠ ' + w + '</div>').join('') +
+  '</section>'
+}
+
+function rosterDetails(r) {
+  if (!r.battleFormation && !r.spellLore && !r.prayerLore && !r.manifestationLore && !r.factionTerrain) return ''
+  const tactics = (r.battleTactics || []).join(' · ')
+  return '<section class="roster-details">' +
+    '<div><span>Gran Alianza</span><strong>' + (r.grandAlliance || '—') + '</strong></div>' +
+    '<div><span>Formación de batalla</span><strong>' + (r.battleFormation || '—') + (r.battleFormationPoints ? ' (' + r.battleFormationPoints + ' pts)' : '') + '</strong></div>' +
+    '<div><span>Cartas de tácticas</span><strong>' + (tactics || '—') + '</strong></div>' +
+    '<div><span>Saber de hechizos</span><strong>' + (r.spellLore || '—') + '</strong></div>' +
+    '<div><span>Saber de plegarias</span><strong>' + (r.prayerLore || '—') + '</strong></div>' +
+    '<div><span>Manifestaciones</span><strong>' + (r.manifestationLore || '—') + '</strong></div>' +
+    '<div><span>Terreno de facción</span><strong>' + (r.factionTerrain || '—') + '</strong></div>' +
+    '<div><span>Despliegues</span><strong>' + (r.drops ?? '—') + '</strong></div>' +
+    '<div><span>Heridas</span><strong>' + (r.wounds ?? '—') + '</strong></div>' +
+  '</section>'
+}
+
+function regimentCards(r) {
+  if (!Array.isArray(r.regiments)) return ''
+  return '<section class="regiments">' + r.regiments.map(regiment =>
+    '<article class="regiment-card"><div class="regiment-title"><strong>' + regiment.name + '</strong>' + (regiment.isGeneralRegiment?'<span>REGIMIENTO DEL GENERAL</span>':'') + '</div>' +
+    regiment.units.map(u => {
+      const extras = [u.artefactDisplayName ? 'Artefacto: ' + u.artefactDisplayName : '', u.heroicTrait ? 'Rasgo heroico: ' + u.heroicTrait : ''].filter(Boolean).join(' · ')
+      return '<div class="regiment-unit-wrap"><div class="regiment-unit"><span>' + (u.modelCount || u.quantity || 1) + ' × ' + (u.displayName || u.name) + (u.isGeneral?' · GENERAL':'') + '</span><b>' + (u.points * u.quantity) + ' pts</b></div>' + (extras ? '<small class="unit-extra">' + extras + '</small>' : '') + '</div>'
+    }).join('') + '</article>'
+  ).join('') + '</section>'
+}
+
+function army() {
+  const r = state.roster
+  const rows = r.units.length ? r.units.map(u =>
+    '<article class="unit-card"><div><strong>' + (u.displayName || u.name) + '</strong><small>' + (u.isGeneral?'GENERAL · ':'') + (u.roles||u.keywords||[]).slice(0,3).join(' · ') + '</small></div><div class="points-right"><b>' + (u.points*u.quantity) + ' pts</b><small>' + u.quantity + '× ' + u.points + '</small></div></article>'
+  ).join('') : '<div class="empty">Todavía no has añadido unidades.</div>'
+  const content =
+    '<section class="page-head"><span class="eyebrow">EJÉRCITO PREPARADO</span><h1>' + r.name + '</h1><p>' + r.faction + ' · ' + r.points + ' / ' + r.pointsLimit + ' pts</p><div class="head-actions"><button class="primary" data-action="start">Iniciar partida</button><span class="preset-badge">LISTA PRECARGADA</span></div></section>' +
+    '<section class="unit-list">' + rows + '</section>' +
+    rosterWarnings(r) + rosterDetails(r) + regimentCards(r) +
+    (r.unitPointsSubtotal && r.battleFormationPoints ? '<div class="points-note">Desglose: <strong>' + r.unitPointsSubtotal + ' pts</strong> en unidades + <strong>' + r.battleFormationPoints + ' pts</strong> de ' + r.battleFormation + ' = <strong>' + r.points + ' pts</strong>.</div>' : '') +
+    '<section class="section-title"><span>QUÉ VEO EN TU LISTA</span><small>Composición estructural</small></section><section class="advice-list">' + analysisCards(r) + '</section>' +
+    ''
+  return shell(content,'army')
+}
+
+function builder() {
+  const d = state.draft || newRoster()
+  const selected = Object.fromEntries(d.units.map(u => [u.id,u]))
+  const catalog = ogorCatalog.map(unit => {
+    const current = selected[unit.id]
+    const qty = current ? current.quantity : 0
+    const isHero = unit.roles.includes('Hero')
+    const general = isHero && qty ? '<button class="general-toggle ' + (current.isGeneral?'on':'') + '" data-unit-id="' + unit.id + '" data-builder-action="general">' + (current.isGeneral?'✓ General':'Hacer general') + '</button>' : ''
+    return '<article class="catalog-row ' + (qty?'selected':'') + '">' +
+      '<div class="catalog-main"><strong>' + (unit.displayName || unit.name) + '</strong><small>' + unit.roles.join(' · ') + (unit.tags.length?' · '+unit.tags.join(' · '):'') + '</small></div>' +
+      '<div class="catalog-points">' + unit.points + ' pts</div>' +
+      '<div class="qty"><button data-unit-id="' + unit.id + '" data-builder-action="minus" ' + (qty?'':'disabled') + '>−</button><b>' + qty + '</b><button data-unit-id="' + unit.id + '" data-builder-action="plus">+</button></div>' +
+      general + '</article>'
+  }).join('')
+  const over = d.points > d.pointsLimit
+  const content =
+    '<section class="builder-head"><span class="eyebrow">CREAR EJÉRCITO</span><input id="army-name" value="' + d.name.replaceAll('"','&quot;') + '" aria-label="Nombre del ejército">' +
+    '<div class="limit-line ' + (over?'over':'') + '"><strong>' + d.points + ' / ' + d.pointsLimit + ' pts</strong><label>Límite <select id="points-limit">' +
+    [1000,1500,2000,2500,3000].map(v=>'<option ' + (d.pointsLimit===v?'selected':'') + '>' + v + '</option>').join('') +
+    '</select></label></div></section>' +
+    '<div class="builder-note">Piloto Ogor Mawtribes · catálogo estructural trazado al upstream.</div>' +
+    '<section class="catalog">' + catalog + '</section>' +
+    '<div class="builder-footer"><button class="secondary" data-action="cancel-builder">Cancelar</button><button class="primary" data-action="save-army" ' + (over||!d.units.length?'disabled':'') + '>Guardar ejército</button></div>'
+  return shell(content,'army')
+}
+
+function phaseOverview(game) {
+  const units = game.roster.units || []
+  const role = name => units.filter(u => (u.roles || u.keywords || []).includes(name))
+  const ranged = units.filter(u => (u.tags || []).includes('Ranged'))
+  const availableCharges = units.filter(u => {
+    const us = game.unitState[u.instanceId] || {}
+    return !us.ran && !us.retreated
+  })
+  const notFought = units.filter(u => !(game.unitState[u.instanceId] || {}).fought)
+
+  if (game.activePlayer !== PLAYERS.YOU) {
+    return {
+      title: 'Turno rival',
+      lead: 'El Companion cambia de contexto: no te propone acciones propias como si fuese tu turno.',
+      items: [
+        'Mantén visibles tus estados y efectos activos.',
+        'Las reacciones específicas aparecerán solo cuando su timing esté verificado.',
+        'Al terminar el turno rival se limpiarán los estados temporales de turno.'
+      ]
+    }
+  }
+
+  if (game.phase === 'HERO') {
+    return {
+      title: 'Fase de Héroe',
+      lead: 'Prepara recursos y habilidades antes de avanzar.',
+      items: [
+        'Tu ejército tiene ' + role('Hero').length + ' héroe(s), ' + role('Wizard').length + ' Wizard y ' + role('Priest').length + ' Priest.',
+        'Revisa habilidades con timing de fase de héroe y efectos que deban declararse ahora.',
+        'Las habilidades concretas de warscroll solo aparecerán aquí cuando estén verificadas.'
+      ]
+    }
+  }
+  if (game.phase === 'MOVEMENT') {
+    return {
+      title: 'Fase de Movimiento',
+      lead: 'Registra qué hace cada unidad; ese estado condiciona fases posteriores.',
+      items: [
+        'Puedes marcar Mover, Correr o Retirarse unidad por unidad.',
+        'Si marcas Correr, el motor recordará ese estado durante el turno.',
+        'Si marcas Retirarse, también quedará registrado para evaluar acciones posteriores.'
+      ]
+    }
+  }
+  if (game.phase === 'SHOOTING') {
+    return {
+      title: 'Fase de Disparo',
+      lead: ranged.length ? 'Tienes ' + ranged.length + ' entrada(s) etiquetada(s) con capacidad de disparo en el catálogo.' : 'No hay entradas etiquetadas como disparo en tu lista actual.',
+      items: [
+        'El Companion no inventará perfiles de ataque que no estén normalizados.',
+        'Los perfiles verificados se incorporarán a cada unidad desde la capa de datos.',
+        'Los estados registrados en movimiento permanecen visibles.'
+      ]
+    }
+  }
+  if (game.phase === 'CHARGE') {
+    return {
+      title: 'Fase de Carga',
+      lead: availableCharges.length + ' de ' + units.length + ' entradas no están bloqueadas por Correr/Retirarse en el estado registrado.',
+      items: [
+        'Las unidades que corrieron aparecen bloqueadas con el motivo.',
+        'Las unidades que se retiraron aparecen bloqueadas con el motivo.',
+        'Otros modificadores de carga se añadirán solo con reglas verificadas.'
+      ]
+    }
+  }
+  if (game.phase === 'COMBAT') {
+    return {
+      title: 'Fase de Combate',
+      lead: notFought.length + ' entrada(s) siguen sin marcar como utilizadas en combate.',
+      items: [
+        'Marca Combatir cuando resuelvas una unidad.',
+        'El Companion conservará qué unidades ya actuaron.',
+        'Prioridades y habilidades de combate se incorporarán desde metadata verificada.'
+      ]
+    }
+  }
+  return {
+    title: 'Fase Final',
+    lead: 'Cierra el turno sin perder efectos o estados pendientes.',
+    items: [
+      'Revisa efectos que expiren al final del turno.',
+      'Comprueba objetivos y anotaciones antes de avanzar.',
+      'Al pasar al siguiente turno se reinician los estados temporales de turno.'
+    ]
+  }
+}
+
+function phasePanel(game) {
+  const info = phaseOverview(game)
+  return '<section class="phase-panel"><span class="eyebrow">GUÍA DE FASE</span><h2>' + info.title + '</h2><p>' + info.lead + '</p><ul>' + info.items.map(item=>'<li>' + item + '</li>').join('') + '</ul></section>'
+}
+
+function battle() {
+  const g = state.game
+  const unitRows = g.roster.units.map(unit => {
+    const ev = evaluateUnit(g,unit)
+    const actions = ev.available.map(a=>'<button class="action-chip" data-unit="' + unit.instanceId + '" data-unit-action="' + a.id + '">' + a.label + '</button>').join('')
+    const blocked = ev.unavailable.map(a=>'<div class="blocked"><b>' + a.label + '</b><span>' + a.reason + '</span></div>').join('')
+    const reminders = ev.reminders.map(r=>'<p class="reminder">⚠ ' + r + '</p>').join('')
+    const us = g.unitState[unit.instanceId] || {}
+    const flags = [us.ran?'Corrió':'',us.retreated?'Se retiró':'',us.charged?'Cargó':'',us.fought?'Combatió':''].filter(Boolean).join(' · ')
+    return '<article class="battle-unit"><div class="unit-title"><strong>' + (unit.displayName || unit.name) + (unit.isGeneral?' · GENERAL':'') + '</strong><small>' + (flags||'Sin acciones registradas') + '</small></div><div class="chips">' + actions + '</div>' + blocked + reminders + '</article>'
+  }).join('')
+  const phases = Object.keys(phaseLabel).map(p=>'<span class="' + (p===g.phase?'current':'') + '">' + phaseLabel[p] + '</span>').join('')
+  const content =
+    '<section class="battle-head"><div><span class="eyebrow">RONDA ' + g.round + '</span><h1>' + (g.activePlayer===PLAYERS.YOU?'MI TURNO':'TURNO RIVAL') + '</h1></div><span class="phase">' + phaseLabel[g.phase] + '</span></section>' +
+    '<div class="phase-track">' + phases + '</div>' +
+    phasePanel(g) +
+    '<section class="section-title"><span>AHORA</span><small>Según el estado registrado</small></section><section class="battle-list">' + unitRows + '</section>' +
+    '<button class="primary sticky-next" data-action="next-phase">Siguiente fase →</button>'
+  return shell(content,'home')
+}
+
+function rules() {
+  const content =
+    '<section class="page-head"><span class="eyebrow">REGLAS Y DATOS</span><h1>Fiabilidad primero</h1></section>' +
+    '<section class="card"><h2>Datos estructurales</h2><p>IDs, nombres, puntos y keywords del piloto Ogor se leen y normalizan desde la fuente upstream. No reescribimos esa base.</p></section>' +
+    '<section class="card"><h2>Consejos actuales</h2><p>El análisis del ejército usa composición: puntos, héroes, Wizard/Priest, presencia de mesa, disparo y monstruos. No afirma interacciones de warscroll no verificadas.</p></section>' +
+    '<section class="card"><h2>Durante la partida</h2><p>El motor ya conserva estado por unidad y puede impedir acciones incompatibles registradas, como cargar después de correr o retirarse.</p></section>' +
+    '<section class="source-card"><span>FUENTE ESTRUCTURAL</span><code>' + source.repository + '/' + source.path + '</code><small>blob ' + source.blobSha.slice(0,12) + '…</small></section>'
+  return shell(content,'rules')
+}
+
+function updateDraftUnit(id, action) {
+  const draft = clone(state.draft || newRoster())
+  const base = catalogById[id]
+  let item = draft.units.find(u=>u.id===id)
+  if(action==='plus'){
+    if(item) item.quantity += 1
+    else draft.units.push(Object.assign({},base,{instanceId:id+'-1',quantity:1,isGeneral:false,keywords:base.roles}))
+  }
+  if(action==='minus' && item){
+    item.quantity -= 1
+    if(item.quantity<=0) draft.units = draft.units.filter(u=>u.id!==id)
+  }
+  if(action==='general' && item && base.roles.includes('Hero')){
+    const turningOn = !item.isGeneral
+    draft.units.forEach(u=>{u.isGeneral=false})
+    item = draft.units.find(u=>u.id===id)
+    if(item) item.isGeneral = turningOn
+  }
+  draft.points = calculatePoints(draft.units)
+  setState({draft})
+}
+
+function render() {
+  const root = document.querySelector('#root')
+  if (state.screen==='battle' && state.game) root.innerHTML=battle()
+  else if (state.screen==='builder') root.innerHTML=builder()
+  else if (state.screen==='army') root.innerHTML=army()
+  else if (state.screen==='rules') root.innerHTML=rules()
+  else root.innerHTML=home()
+}
+
+document.addEventListener('click', event=>{
+  const screenButton = event.target.closest('[data-screen]')
+  if(screenButton) return setState({screen:screenButton.dataset.screen})
+
+  const actionButton = event.target.closest('[data-action]')
+  const action = actionButton ? actionButton.dataset.action : null
+  if(action==='start') return setState({game:createGameState(state.roster),screen:'battle'})
+  if(action==='continue') return setState({screen:'battle'})
+  if(action==='next-phase') return setState({game:nextPhase(state.game)})
+
+  const unitButton = event.target.closest('[data-unit-action]')
+  if(unitButton) return setState({game:setUnitAction(state.game,unitButton.dataset.unit,unitButton.dataset.unitAction)})
+})
+
+document.addEventListener('input', event=>{
+  if(state.screen!=='builder') return
+  if(event.target.id==='army-name'){
+    const draft=clone(state.draft)
+    draft.name=event.target.value
+    state=Object.assign({},state,{draft})
+    persist()
+  }
+})
+
+document.addEventListener('change', event=>{
+  if(state.screen!=='builder') return
+  if(event.target.id==='points-limit'){
+    const draft=clone(state.draft)
+    draft.pointsLimit=Number(event.target.value)
+    setState({draft})
+  }
+})
+
+render()
