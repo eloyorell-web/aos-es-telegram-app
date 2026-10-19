@@ -305,14 +305,13 @@ function render() {
 document.addEventListener('click', event=>{
   const screenButton = event.target.closest('[data-screen]')
   if(screenButton) return setState({screen:screenButton.dataset.screen})
-  const builderButton = event.target.closest('[data-builder-action]')
-  if(builderButton) return updateDraftUnit(builderButton.dataset.unitId,builderButton.dataset.builderAction)
+
   const actionButton = event.target.closest('[data-action]')
   const action = actionButton ? actionButton.dataset.action : null
   if(action==='start') return setState({game:createGameState(state.roster),screen:'battle'})
   if(action==='continue') return setState({screen:'battle'})
   if(action==='next-phase') return setState({game:nextPhase(state.game)})
-  }
+
   const unitButton = event.target.closest('[data-unit-action]')
   if(unitButton) return setState({game:setUnitAction(state.game,unitButton.dataset.unit,unitButton.dataset.unitAction)})
 })
